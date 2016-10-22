@@ -1,4 +1,5 @@
 #include <time.h>
+#include <pthread.h>
 #include "array_gen.h"
 
 
@@ -10,6 +11,11 @@ int * array;
 
 // Quicksort
 
+typedef struct q_struct{
+    int * arr;
+    int lo;
+    int hi;
+} Q_STRUCT;
 
 // The partitioning helping function. The function assumes that the array
 // indicies lo < hi. First, assign a "pivot" element as the right most
@@ -47,12 +53,44 @@ int partition(int * arr, int lo, int hi) {
 // and recursively quicksort the left and right subarray, split based on the
 // pivot element
 
-void q_sort(int * arr, int lo, int hi) {
+void * q_sort(void * q_args) {
     
+    Q_STRUCT * input = (Q_STRUCT *) q_args;
+    int * arr = input->arr;
+    int lo = input->lo;
+    int hi = input->hi;
+
     if (lo < hi) {
+        
         int pivot = partition(arr, lo, hi);
-        q_sort(arr, lo, pivot-1);
-        q_sort(arr, pivot+1, hi);
+        print_arr(arr, 16);
+
+        Q_STRUCT left_input, right_input;
+        left_input.arr = arr;
+        left_input.lo = lo;
+        left_input.hi = pivot-1;
+        right_input.arr = arr;
+        right_input.lo = pivot+1;
+        right_input.hi = hi;
+
+        pthread_t tid_l, tid_r;
+        int ret;
+
+        ret = pthread_create(&tid_l, NULL, q_sort, &left_input);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
+        
+        ret = pthread_create(&tid_r, NULL, q_sort, &right_input);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
+
+        pthread_join(tid_l, NULL);
+        pthread_join(tid_r, NULL);
+        pthread_exit(NULL);
     }
 }
 
@@ -61,7 +99,13 @@ void q_sort(int * arr, int lo, int hi) {
 // functions
 
 void quicksort(int * arr, int size) {
-    q_sort(arr, 0, size-1);
+    
+    Q_STRUCT input;
+    input.arr = arr;
+    input.lo = 0;
+    input.hi = size-1;
+
+    q_sort(&input);
 }
 
 
