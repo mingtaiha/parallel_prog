@@ -63,7 +63,6 @@ void * q_sort(void * q_args) {
     if (lo < hi) {
         
         int pivot = partition(arr, lo, hi);
-        print_arr(arr, 16);
 
         Q_STRUCT left_input, right_input;
         left_input.arr = arr;
@@ -90,7 +89,7 @@ void * q_sort(void * q_args) {
 
         pthread_join(tid_l, NULL);
         pthread_join(tid_r, NULL);
-        pthread_exit(NULL);
+        //pthread_exit(NULL);
     }
 }
 
@@ -113,6 +112,12 @@ void quicksort(int * arr, int size) {
 
 // Bitonic Sort
 
+typedef struct {
+    int * arr;
+    int lo;
+    int count;
+    int is_up;
+} B_STRUCT;
 
 // This function decides how the swapping should occur. is_up denotes whether
 // to swap elements in ascending (is_up == 1) or descending (is_up == 0) order.
@@ -138,8 +143,14 @@ void dir_swap(int * arr, int i, int j, int is_up) {
 // The sequence to be sorted starts at the index lo, and sorts 'count' number
 // of elements.
 
-void b_merge(int * arr, int lo, int count, int is_up) {
+void * b_merge(void * b_args) {
 
+    B_STRUCT * input = (B_STRUCT *) b_args;
+    int * arr = input->arr;
+    int lo = input->lo;
+    int count = input->count;
+    int is_up = input->is_up;
+    
     if (count > 1) {
         int k = count / 2;
 
@@ -147,8 +158,37 @@ void b_merge(int * arr, int lo, int count, int is_up) {
         for (i = lo; i < lo+k; i++) {
             dir_swap(arr, i, i + k, is_up);
         }
-        b_merge(arr, lo, k, is_up);
-        b_merge(arr, lo + k, k, is_up);
+
+        B_STRUCT merge_input1, merge_input2;
+
+        merge_input1.arr = arr;
+        merge_input1.lo = lo;
+        merge_input1.count = k;
+        merge_input1.is_up = is_up;
+        
+        merge_input2.arr = arr;
+        merge_input2.lo = lo + k;
+        merge_input2.count = k;
+        merge_input2.is_up = is_up;
+        
+        pthread_t thr_merge1, thr_merge2;
+        int ret;
+
+        ret = pthread_create(&thr_merge1, NULL, b_merge, &merge_input1);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
+
+        ret = pthread_create(&thr_merge2, NULL, b_merge, &merge_input2);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
+
+        pthread_join(thr_merge1, NULL);
+        pthread_join(thr_merge2, NULL);
+
     }
 }
 
@@ -157,19 +197,55 @@ void b_merge(int * arr, int lo, int count, int is_up) {
 // in descending order. Then, it calls b_merge to merge the two subarrays
 // to follow the same order
 
-void b_sort(int * arr, int lo, int count, int is_up) {
+void * b_sort(void * b_args) {
+ 
+    B_STRUCT * input = (B_STRUCT *) b_args;
+    int * arr = input->arr;
+    int lo = input->lo;
+    int count = input->count;
+    int is_up = input->is_up;
  
     if (count > 1) {
         int k = count / 2;
         
+        B_STRUCT up_input, down_input;
+        up_input.arr = arr;
+        up_input.lo = lo;
+        up_input.count = k;
+        up_input.is_up = 1;
+        down_input.arr = arr;
+        down_input.lo = lo + k;
+        down_input.count = k;
+        down_input.is_up = 0;
+        
+        pthread_t thr_up, thr_down;
+        int ret;
+
         // sort in ascending order since is_up is 1
-        b_sort(arr, lo, k, 1);
+        ret = pthread_create(&thr_up, NULL, b_sort, &up_input);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
         
         // sort in descending ordering since is_up is 0
-        b_sort(arr, lo + k, k, 0);
+        ret = pthread_create(&thr_down, NULL, b_sort, &down_input);
+        if (ret) {
+            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+            exit(1);
+        }
 
+        pthread_join(thr_up, NULL);
+        pthread_join(thr_down, NULL);
+        
         // Merge the whole sequence in ascending order since is_up is 1
-        b_merge(arr, lo, count, is_up);
+        B_STRUCT merge_input;
+        merge_input.arr = arr;
+        merge_input.lo = lo;
+        merge_input.count = count;
+        merge_input.is_up = is_up;
+
+        b_merge(&merge_input);
     }
 }
 
@@ -178,7 +254,14 @@ void b_sort(int * arr, int lo, int count, int is_up) {
 // underlying functions
 
 int bitonic_sort(int * arr, int size) {
-    b_sort(arr, 0, size, 1);
+
+    B_STRUCT input;
+    input.arr = arr;
+    input.lo = 0;
+    input.count = size;
+    input.is_up = 1;
+
+    b_sort(&input);
 }
     
 
@@ -200,12 +283,16 @@ int main(int argc, char** argv) {
     
     if (which_sort == 0) {              // Quicksort chosen
         printf("Quicksort chosen\n");
-        print_arr(array, size);
+        //print_arr(array, size);
         quicksort(array, size);         // Perform Quicksort
-        print_arr(array, size);
+        //print_arr(array, size);
+        is_arr_sorted(array, size);
     } else if (which_sort == 1) {       // Bitonic Sort chosen
         printf("Bitonic Sort chosen\n");
+        //print_arr(array, size);
         bitonic_sort(array, size);      // Perform Bitonic Sort
+        //print_arr(array, size);
+        is_arr_sorted(array, size);
     } else {
         printf("No sorting algorithm of this type implemented\n");
     }

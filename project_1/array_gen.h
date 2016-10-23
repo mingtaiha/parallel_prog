@@ -52,6 +52,18 @@ void write_arr(int * arr, int size, char * filename) {
     fclose(f);
 }
 
+void is_arr_sorted(int * arr, int size) {
+
+    int i;
+    for (i = 1; i < size; i++) {
+        if (arr[i] < arr[i-1]) {
+            printf("Array is not sorted\n");
+            return;
+        }
+    }
+    printf("Array is sorted\n");
+}
+
 #endif
     
 #if TEST

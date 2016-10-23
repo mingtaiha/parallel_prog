@@ -156,12 +156,16 @@ int main(int argc, char** argv) {
     
     if (which_sort == 0) {              // Quicksort chosen
         printf("Quicksort chosen\n");
-        print_arr(array, size);
+        //print_arr(array, size);
         quicksort(array, size);         // Perform Quicksort
-        print_arr(array, size);
+        //print_arr(array, size);
+        is_arr_sorted(array, size);
     } else if (which_sort == 1) {       // Bitonic Sort chosen
         printf("Bitonic Sort chosen\n");
+        //print_arr(array, size);
         bitonic_sort(array, size);      // Perform Bitonic Sort
+        //print_arr(array, size);
+        is_arr_sorted(array, size);
     } else {
         printf("No sorting algorithm of this type implemented\n");
     }
