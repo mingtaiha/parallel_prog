@@ -15,6 +15,7 @@ typedef struct q_struct{
     int * arr;
     int lo;
     int hi;
+    int layers;
 } Q_STRUCT;
 
 // The partitioning helping function. The function assumes that the array
@@ -59,6 +60,7 @@ void * q_sort(void * q_args) {
     int * arr = input->arr;
     int lo = input->lo;
     int hi = input->hi;
+    int layers = input->layers;
 
     if (lo < hi) {
         
@@ -72,23 +74,35 @@ void * q_sort(void * q_args) {
         right_input.lo = pivot+1;
         right_input.hi = hi;
 
-        pthread_t tid_l, tid_r;
-        int ret;
-
-        ret = pthread_create(&tid_l, NULL, q_sort, &left_input);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
-        }
+        printf("%d\t", layers);
+        if (layers == 0) { 
+            left_input.layers = 0;
+            right_input.layers = 0;
+            q_sort(&left_input);
+            q_sort(&right_input);
         
-        ret = pthread_create(&tid_r, NULL, q_sort, &right_input);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
-        }
+        } else {
 
-        pthread_join(tid_l, NULL);
-        pthread_join(tid_r, NULL);
+            left_input.layers = layers - 1;
+            right_input.layers = layers - 1;
+            pthread_t tid_l, tid_r;
+            int ret;
+
+            ret = pthread_create(&tid_l, NULL, q_sort, &left_input);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
+        
+            ret = pthread_create(&tid_r, NULL, q_sort, &right_input);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
+
+            pthread_join(tid_l, NULL);
+            pthread_join(tid_r, NULL);
+        }
         //pthread_exit(NULL);
     }
 }
@@ -97,12 +111,13 @@ void * q_sort(void * q_args) {
 // A mask function to separate the invocation of quicksort from the underlying
 // functions
 
-void quicksort(int * arr, int size) {
+void quicksort(int * arr, int size, int layers) {
     
     Q_STRUCT input;
     input.arr = arr;
     input.lo = 0;
     input.hi = size-1;
+    input.layers = layers;
 
     q_sort(&input);
 }
@@ -274,8 +289,10 @@ int main(int argc, char** argv) {
     int size = atoi(argv[1]);           // Gets the size
     char * filename = argv[2];          // Gets the filename
     int which_sort = atoi(argv[3]);     // 1 for bitonic sort, 0 for quicksort
+    int layers = atoi(argv[4]);          // Number of layers to go down
+
+    printf("%d\n", layers);
     array = read_arr(size, filename);   // Reads array from file
-    
 
     
     clock_t start_time, end_time;       // Instantiate timing variables
@@ -284,7 +301,7 @@ int main(int argc, char** argv) {
     if (which_sort == 0) {              // Quicksort chosen
         printf("Quicksort chosen\n");
         //print_arr(array, size);
-        quicksort(array, size);         // Perform Quicksort
+        quicksort(array, size, layers);         // Perform Quicksort
         //print_arr(array, size);
         is_arr_sorted(array, size);
     } else if (which_sort == 1) {       // Bitonic Sort chosen
