@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-
+#include <time.h>
 
 typedef struct matricies {
 	double* Asub; // Sub matrix of A
@@ -39,7 +39,7 @@ void* worker_thread(void* args) {
 }
 
 int main() {
-	
+	clock_t start = clock(), diff;
 	double* y; // Input y
 	int n;  //The n from nxn matrix
 	int k; //Current row index, from 0 to n-1
@@ -65,14 +65,11 @@ int main() {
 	mx* tArgs = (mx*)malloc(4 * sizeof(mx));
 	pthread_t *thread_handles = (pthread_t*) malloc(4*sizeof(pthread_t));
 
-		//	Implementation 1: 
+		//	Parallel implementation: 
 	for (k = 0; k < n; k ++ ) { // Incrementing Rows
-		printf("Division of first row: ");
 		for (i = k+n*k; i < n*(k + 1); i++) { // Incrementing Columns
 			A[i] = A[i] / A[k+n*k];//Divide row by first number
-			printf("%f\t", A[i]);
 		}
-		printf(" end\n");
 		
 		nk1 = n-k-1;
 		y[k] = q[k] / A[k + n*k];// Store adjusted q value in y
@@ -125,7 +122,11 @@ int main() {
 		}
 		free(res);
 	}
-	printf("Matrix A: \n");
+
+	diff = clock() - start;
+	int msec = diff * 1000 / CLOCKS_PER_SEC;
+	printf("Parallel implementation time taken: %d seconds, %d milliseconds", msec/1000, msec%1000);
+	/*printf("Matrix A: \n");
 	for(k = 0; k <  n; k++){
 		for( i = 0; i < n; i++){
 			printf("%f ", A[i + k*n]);
@@ -137,6 +138,9 @@ int main() {
 		printf("%f ", q[k]);
 	}
 	printf("\n");
+	*/
+	
+	
 	return 0;
 }
 
