@@ -74,7 +74,7 @@ void * q_sort(void * q_args) {
         right_input.lo = pivot+1;
         right_input.hi = hi;
 
-        printf("%d\t", layers);
+        //printf("%d\t", layers);
         if (layers == 0) { 
             left_input.layers = 0;
             right_input.layers = 0;
