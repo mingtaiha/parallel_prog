@@ -6,3 +6,15 @@ Sequential implementation time taken: 0 seconds, 0 milliseconds
 Sequential implementation time taken: 0 seconds, 900 milliseconds
 -bash-4.2$ ./gauss_sequential 9000
 Sequential implementation time taken: 912 seconds, 580 milliseconds
+
+-bash-4.2$ ./gauss_parallel 9
+Parallel implementation time taken: 0 seconds, 0 milliseconds
+-bash-4.2$ ./gauss_parallel 99
+Parallel implementation time taken: 0 seconds, 0 milliseconds
+-bash-4.2$ ./gauss_parallel 999
+Parallel implementation time taken: 0 seconds, 10 milliseconds
+-bash-4.2$ ./gauss_parallel 9999
+Parallel implementation time taken: 0 seconds, 180 milliseconds
+-bash-4.2$ ./gauss_parallel 30000
+Parallel implementation time taken: 1 seconds, 660 milliseconds
+-bash-4.2$
