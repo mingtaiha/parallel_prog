@@ -8,11 +8,11 @@ int main() {
 	int n;  //The n from nxn matrix
 	int k; //Current row index, from 0 to n-1
 	int i; // incrementer
-	n = 3;// Arbitrarily large
+	int j;
+	n = 3; // Arbitrarily large
 	double A[9] = { 1, 1, 8, 3, 6, 7, 9, 2, 1 }; // Implement as a large flat n*n array
 	double q[3] = { 8, 74, 9 };
 	
-	pthread_attr_init(&attr);
 	//A = (int*)malloc(n*n);
 	//q = (int*)malloc(n);
 	y = (double*)malloc(n); // Initial values of y are irrelevant, y is overwritten and never read until written to. 
@@ -25,13 +25,13 @@ int main() {
 		for (i = 0; i < n; i++) {
 			for (j = k; j < n; j++) {
 				//printf("Sub operation: %f - %f*%f\n",A[i*n +j], A[n*k+j], A[k+i*n] );
-	            A[i*n + j] = A[i*n + j] - A[n*k+j] * A[k+i*n];
+	       			A[i*n + j] = A[i*n + j] - A[n*k+j] * A[k+i*n];
 			}
-		q[k+rt+i] = q[k+rt+i] - y[k+rt+i] * A[i*n];// Commit adjusted q value
+			q[i] = q[i] - y[i] * A[i];// Commit adjusted q value
 		}
 	}
 	diff = clock() - start;
 	int msec = diff * 1000 / CLOCKS_PER_SEC;
-	printf("Sequential implementation time taken: %d seconds, %d milliseconds", msec/1000, msec%1000);
+	printf("Sequential implementation time taken: %d seconds, %d milliseconds\n", msec/1000, msec%1000);
 	return 0;
 }

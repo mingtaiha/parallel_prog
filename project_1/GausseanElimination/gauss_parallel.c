@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <math.h>
 
 typedef struct matricies {
 	double* Asub; // Sub matrix of A
@@ -30,7 +31,7 @@ void* worker_thread(void* args) {
 	int j;
 	for (i = 0; i < size; i++) {
 		for (j = k; j < n; j++) {
-			printf("Sub operation: %f - %f*%f\n",A[i*n +j], certainRow[j], A[k+i*n] );
+			//printf("Sub operation: %f - %f*%f\n",A[i*n +j], certainRow[j], A[k+i*n] );
                         A[i*n + j] = A[i*n + j] - certainRow[j] * A[k+i*n];
 		}
 		q[krt+i] = q[krt+i] - y[krt+i] * A[i*n];// Commit adjusted q value
@@ -38,10 +39,14 @@ void* worker_thread(void* args) {
 	return NULL;
 }
 
-int main() {
-	clock_t start = clock(), diff;
+int main(int argc, char* argv[]) {
+	if ( argc != 2)
+	{
+		printf("Too few arguments. Please supply n of an nxn square matrix");
+		return -1;
+	}
+	int n = atoi(argv[1]);
 	double* y; // Input y
-	int n;  //The n from nxn matrix
 	int k; //Current row index, from 0 to n-1
 	int i; // incrementer
 	void* res;// result
@@ -51,20 +56,27 @@ int main() {
 	int actualThreads; // Number of threads actually used.
 	int rt;//temporary variable to handle the leftover row in edge cases
 	int nk1; //n - k - 1
-	n = 3;// Arbitrarily large
 	pthread_attr_t attr;
-	double A[9] = { 1, 1, 8, 3, 6, 7, 9, 2, 1 }; // Implement as a large flat n*n array
-	double q[3] = { 8, 74, 9 };
-	// A*q = y
 	
 	pthread_attr_init(&attr);
-	//A = (int*)malloc(n*n);
-	//q = (int*)malloc(n);
+	double* A = (double*)malloc(n*n);
+        double* q = (double*)malloc(n);
+	for(i = 0; i < n; i++){
+		//printf("[ ");
+		for(k = 0; k < n; k++){
+			A[i*n+k] = (ceil(rand()%200) + 1);
+		//	printf("%f " ,A[i*n+k]);
+		}
+		//printf(" ]\n");
+		q[i] = (ceil(rand()%200) + 1);
+	}
+	
 	y = (double*)malloc(n); // Initial values of y are irrelevant, y is overwritten and never read until written to. 
 	
+	clock_t start = clock(), diff;
 	mx* tArgs = (mx*)malloc(4 * sizeof(mx));
-	pthread_t *thread_handles = (pthread_t*) malloc(4*sizeof(pthread_t));
-
+	pthread_t *thread_handles = (pthread_t*) calloc(8,sizeof(pthread_t));
+	pthread_t *backup_handles = (pthread_t*) calloc(8,sizeof(pthread_t));
 		//	Parallel implementation: 
 	for (k = 0; k < n; k ++ ) { // Incrementing Rows
 		for (i = k+n*k; i < n*(k + 1); i++) { // Incrementing Columns
@@ -86,14 +98,13 @@ int main() {
 		else{
 			rows = nk1/4; // Guaranteed to be non zero
 			actualThreads = 4;
-			leftover = nk1 - rows*(actualThreads-1);
+			leftover = nk1 - rows*(actualThreads-2);
 		}
 
 		for (threads = 0; threads < actualThreads; threads++) {
 			if (threads == 3) 
 				rows = leftover; 
-			rt += rows;
-			tArgs[threads].Asub = &A[n*(k+1)];
+			tArgs[threads].Asub = &A[n*(k+rt+1)];
 		//	The pointer to the first array entry of the worker thread's submatrix
 			tArgs[threads].size_Asub = rows;
 		//	Number of rows of said submatrix
@@ -107,25 +118,29 @@ int main() {
 		//	Should be threadsafe, as no entry is modified by more than one worker.
 			if(pthread_create(&thread_handles[threads], &attr, &worker_thread,
 				(void *)&tArgs[threads])!= 0){
+				backup_handles[threads] = thread_handles[threads];
 				printf("pthread_create error at: %d\n", threads);
 			}
 			else {
-				printf("pthread_create success; thread: %d\n", threads);
+				//printf("pthread_create success; thread: %d\n", threads);
 			}
+			rt += rows;
 		}
 		//	Wait for all threads to finish before proceeding
 		for (threads = 0; threads<actualThreads; threads++) {
-			printf("Attempting pthread join of thread: %d\n", threads);
-			if (pthread_join(thread_handles[threads], &res) != 0) {
-				printf("thread %d failed", threads);
+			if(backup_handles[threads]!=0){
+				//printf("Attempting pthread join of thread: %d\n", threads);
+				if (pthread_join(backup_handles[threads], &res) != 0) {
+					printf("thread %d failed", threads);
+				}
 			}
+			backup_handles[threads] = 0;
 		}
-		free(res);
 	}
 
 	diff = clock() - start;
 	int msec = diff * 1000 / CLOCKS_PER_SEC;
-	printf("Parallel implementation time taken: %d seconds, %d milliseconds", msec/1000, msec%1000);
+	printf("Parallel implementation time taken: %d seconds, %d milliseconds\n", msec/1000, msec%1000);
 	/*printf("Matrix A: \n");
 	for(k = 0; k <  n; k++){
 		for( i = 0; i < n; i++){
