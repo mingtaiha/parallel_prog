@@ -56,11 +56,11 @@ int main(int argc, char **argv) {
 
     int size = atoi(argv[1]);
     int * array = make_arr(size);
-    print_arr(array, size);
+//    print_arr(array, size);
     write_arr(array, size, "arr_test.dat");
 
     int * array2 = read_arr(size, "arr_test.dat");
-    print_arr(array2, size);
+//    print_arr(array2, size);
  
     return 0;
 }
