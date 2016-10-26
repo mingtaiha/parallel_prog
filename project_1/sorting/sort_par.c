@@ -132,6 +132,8 @@ typedef struct {
     int lo;
     int count;
     int is_up;
+    int layer;
+    int max_layers;
 } B_STRUCT;
 
 // This function decides how the swapping should occur. is_up denotes whether
@@ -165,6 +167,8 @@ void * b_merge(void * b_args) {
     int lo = input->lo;
     int count = input->count;
     int is_up = input->is_up;
+    int layer = input->layer;
+    int max_layers = input->max_layers;
     
     if (count > 1) {
         int k = count / 2;
@@ -180,30 +184,42 @@ void * b_merge(void * b_args) {
         merge_input1.lo = lo;
         merge_input1.count = k;
         merge_input1.is_up = is_up;
+        merge_input1.max_layers = max_layers;
         
         merge_input2.arr = arr;
         merge_input2.lo = lo + k;
         merge_input2.count = k;
         merge_input2.is_up = is_up;
+        merge_input2.max_layers = max_layers;
         
-        pthread_t thr_merge1, thr_merge2;
-        int ret;
+        if (layer <= 0) {
+            merge_input1.layer = 0;
+            merge_input2.layer = 0;
+            b_merge(&merge_input1);
+            b_merge(&merge_input2);
+        } 
+        else {
+            
+            merge_input1.layer = layer - 1;
+            merge_input2.layer = layer - 1;
+            pthread_t thr_merge1, thr_merge2;
+            int ret;
 
-        ret = pthread_create(&thr_merge1, NULL, b_merge, &merge_input1);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
+            ret = pthread_create(&thr_merge1, NULL, b_merge, &merge_input1);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
+
+            ret = pthread_create(&thr_merge2, NULL, b_merge, &merge_input2);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
+
+            pthread_join(thr_merge1, NULL);
+            pthread_join(thr_merge2, NULL);
         }
-
-        ret = pthread_create(&thr_merge2, NULL, b_merge, &merge_input2);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
-        }
-
-        pthread_join(thr_merge1, NULL);
-        pthread_join(thr_merge2, NULL);
-
     }
 }
 
@@ -219,46 +235,64 @@ void * b_sort(void * b_args) {
     int lo = input->lo;
     int count = input->count;
     int is_up = input->is_up;
- 
+    int layer = input->layer;
+    int max_layers = input->max_layers;
+
     if (count > 1) {
         int k = count / 2;
-        
+
         B_STRUCT up_input, down_input;
+        
         up_input.arr = arr;
         up_input.lo = lo;
         up_input.count = k;
         up_input.is_up = 1;
+        up_input.max_layers = max_layers;
+        
         down_input.arr = arr;
         down_input.lo = lo + k;
         down_input.count = k;
         down_input.is_up = 0;
+        down_input.max_layers = max_layers;
         
-        pthread_t thr_up, thr_down;
-        int ret;
+        if (layer >= max_layers) {
+            up_input.layer = max_layers;
+            down_input.layer = max_layers;
+            b_sort(&up_input);
+            b_sort(&down_input);
+        }
+        else {
+
+            up_input.layer = layer + 1;
+            down_input.layer = layer + 1;
+            pthread_t thr_up, thr_down;
+            int ret;
 
         // sort in ascending order since is_up is 1
-        ret = pthread_create(&thr_up, NULL, b_sort, &up_input);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
-        }
-        
-        // sort in descending ordering since is_up is 0
-        ret = pthread_create(&thr_down, NULL, b_sort, &down_input);
-        if (ret) {
-            printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
-            exit(1);
-        }
+            ret = pthread_create(&thr_up, NULL, b_sort, &up_input);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
+            
+            // sort in descending ordering since is_up is 0
+            ret = pthread_create(&thr_down, NULL, b_sort, &down_input);
+            if (ret) {
+                printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
+                exit(1);
+            }
 
-        pthread_join(thr_up, NULL);
-        pthread_join(thr_down, NULL);
-        
+            pthread_join(thr_up, NULL);
+            pthread_join(thr_down, NULL);
+        }
         // Merge the whole sequence in ascending order since is_up is 1
         B_STRUCT merge_input;
         merge_input.arr = arr;
         merge_input.lo = lo;
         merge_input.count = count;
         merge_input.is_up = is_up;
+        merge_input.layer = max_layers - layer;
+        merge_input.max_layers = max_layers;
 
         b_merge(&merge_input);
     }
@@ -268,13 +302,15 @@ void * b_sort(void * b_args) {
 // A mask function to separate the invocation of bitonic_sort from the 
 // underlying functions
 
-int bitonic_sort(int * arr, int size) {
+int bitonic_sort(int * arr, int size, int layers) {
 
     B_STRUCT input;
     input.arr = arr;
     input.lo = 0;
     input.count = size;
     input.is_up = 1;
+    input.layer = 0;
+    input.max_layers = layers;
 
     b_sort(&input);
 }
@@ -289,7 +325,7 @@ int main(int argc, char** argv) {
     int size = atoi(argv[1]);           // Gets the size
     char * filename = argv[2];          // Gets the filename
     int which_sort = atoi(argv[3]);     // 1 for bitonic sort, 0 for quicksort
-    int layers = atoi(argv[4]);          // Number of layers to go down
+    int layers = atoi(argv[4]);         // Number of layers to go down
 
     printf("%d\n", layers);
     array = read_arr(size, filename);   // Reads array from file
@@ -298,16 +334,16 @@ int main(int argc, char** argv) {
     clock_t start_time, end_time;       // Instantiate timing variables
     start_time = clock();               // Gets start time
     
-    if (which_sort == 0) {              // Quicksort chosen
+    if (which_sort == 0) {                      // Quicksort chosen
         printf("Quicksort chosen\n");
         //print_arr(array, size);
         quicksort(array, size, layers);         // Perform Quicksort
         //print_arr(array, size);
         is_arr_sorted(array, size);
-    } else if (which_sort == 1) {       // Bitonic Sort chosen
+    } else if (which_sort == 1) {               // Bitonic Sort chosen
         printf("Bitonic Sort chosen\n");
         //print_arr(array, size);
-        bitonic_sort(array, size);      // Perform Bitonic Sort
+        bitonic_sort(array, size, layers);      // Perform Bitonic Sort
         //print_arr(array, size);
         is_arr_sorted(array, size);
     } else {
