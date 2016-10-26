@@ -1,33 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
-int main() {
+int main(int argc, char* argv[]) {
+	if ( argc != 2)
+	{
+		printf("Too few arguments. Please supply n of an nxn square matrix");
+		return -1;
+	}	
 	clock_t start = clock(), diff;
 	double* y; // Input y
-	int n;  //The n from nxn matrix
+	int n = atoi(argv[1]);  //The n from nxn matrix
 	int k; //Current row index, from 0 to n-1
 	int i; // incrementer
 	int j;
-	n = 3; // Arbitrarily large
-	double A[9] = { 1, 1, 8, 3, 6, 7, 9, 2, 1 }; // Implement as a large flat n*n array
-	double q[3] = { 8, 74, 9 };
-	
-	//A = (int*)malloc(n*n);
-	//q = (int*)malloc(n);
-	y = (double*)malloc(n); // Initial values of y are irrelevant, y is overwritten and never read until written to. 
+	double** A = (double**)malloc(n*sizeof(double*));
+	if(A == NULL){printf("malloc failed");return -1;}
+
+	y = (double*)malloc(n*sizeof(double)); // Initial values of y are irrelevant, y is overwritten and never read until written to.
+        if(y == NULL){printf("malloc failed"); return -1;}
+
+        double* q = (double*)malloc(n*sizeof(double));
+	if(q == NULL){printf("malloc failed");return -1;}	
+
+	for(k = 0; k < n; k++){
+		if((A[k] = (double*) malloc(n*sizeof(double)))== NULL){
+			printf("malloc failed"); return -1;}
+		for(i = 0; i < n; i++){
+			A[k][i] = (ceil(rand()%200) + 1);
+		}
+		q[i] = (ceil(rand()%200) + 1);
+	}
 	
 	for (k = 0; k < n; k ++ ) { // Incrementing Rows
-		for (i = k+n*k; i < n*(k + 1); i++) { // Incrementing Columns
-			A[i] = A[i] / A[k+n*k];//Divide row by first number
+		for (i = k+1; i < n; i++) { // Incrementing Columns
+			A[k][i] = A[k][i] / A[k][k];//Divide row by first number
 		}
-		y[k] = q[k] / A[k + n*k];// Store adjusted q value in y
-		for (i = 0; i < n; i++) {
+		y[k] = q[k] / A[k][k];// Store adjusted q value in y
+		A[k][k] = 1;
+		for (i = k+1; i < n; i++) {
 			for (j = k; j < n; j++) {
-				//printf("Sub operation: %f - %f*%f\n",A[i*n +j], A[n*k+j], A[k+i*n] );
-	       			A[i*n + j] = A[i*n + j] - A[n*k+j] * A[k+i*n];
+	       			A[i][j] = A[i][j] - A[k][j] * A[i][k];
 			}
-			q[i] = q[i] - y[i] * A[i];// Commit adjusted q value
+			q[i] = q[i] - y[k] * A[i][k];// Commit adjusted q value
 		}
 	}
 	diff = clock() - start;
