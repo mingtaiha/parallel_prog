@@ -39,12 +39,13 @@ void* worker_thread(void* args) {
 }
 
 int main(int argc, char* argv[]) {
-	if ( argc != 2)
+	if ( argc != 3)
 	{
-		printf("Too few arguments. Please supply n of an nxn square matrix");
+		printf("Please supply n of an nxn square matrix, and the number of threads desired respectively.");
 		return -1;
 	}
 	int n = atoi(argv[1]);
+	int desired = atoi(argv[2]);
 	double* y; // Input y
 	int k; //Current row index, from 0 to n-1
 	int i; // incrementer
@@ -75,9 +76,9 @@ int main(int argc, char* argv[]) {
 	if(y == NULL){printf("malloc failed"); return -1;}
 
 	clock_t start = clock(), diff;
-	mx* tArgs = (mx*)malloc(4 * sizeof(mx));
-	pthread_t *thread_handles = (pthread_t*) calloc(8,sizeof(pthread_t));
-	pthread_t *backup_handles = (pthread_t*) calloc(8,sizeof(pthread_t));
+	mx* tArgs = (mx*)malloc(desired * sizeof(mx));
+	pthread_t *thread_handles = (pthread_t*) calloc(2*desired,sizeof(pthread_t));
+	pthread_t *backup_handles = (pthread_t*) calloc(2*desired,sizeof(pthread_t));
 		//	Parallel implementation: 
 	for (k = 0; k < n; k ++ ) { // Incrementing Rows
 		for (i = k+1; i < n; i++) { // Incrementing Columns
@@ -88,23 +89,23 @@ int main(int argc, char* argv[]) {
 
 		nk1 = n-k-1;
 		//	Hand each thread n/4 consecutive rows; one thread per CPU, and process the elimination.
-		rows = (nk1) / 4;
+		rows = (nk1) / desired;
 		leftover = n-k;
 		actualThreads = 0;
 		rt = 0;
 		//Calculate the number of threads we really need. 
-		if(nk1 < 4){
+		if(nk1 < desired){ // If we have more threads than rows, give all the rows to one thread.  
 			rows = nk1;//Note, this is nk numeral one, not L
 			actualThreads = 1;
 		}
 		else{
-			rows = nk1/4; // Guaranteed to be non zero
-			actualThreads = 4;
+			rows = nk1/desired; // Guaranteed to be non zero
+			actualThreads = desired;
 			leftover = nk1 - rows*(actualThreads-1);
 		}
 		if(k>n-1){
 			for (threads = 0; threads < actualThreads; threads++) {
-				if (threads == 3) 
+				if (threads == desired-1) 
 					rows = leftover; 
 				tArgs[threads].Asub = &A[k+rt+1];
 			//	The pointer to the first array entry of the worker thread's submatrix
