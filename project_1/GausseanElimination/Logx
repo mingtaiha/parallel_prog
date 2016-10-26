@@ -1,0 +1,8 @@
+-bash-4.2$ ./gauss_sequential 9
+Sequential implementation time taken: 0 seconds, 0 milliseconds
+-bash-4.2$ ./gauss_sequential 90
+Sequential implementation time taken: 0 seconds, 0 milliseconds
+-bash-4.2$ ./gauss_sequential 900
+Sequential implementation time taken: 0 seconds, 900 milliseconds
+-bash-4.2$ ./gauss_sequential 9000
+Sequential implementation time taken: 912 seconds, 580 milliseconds
