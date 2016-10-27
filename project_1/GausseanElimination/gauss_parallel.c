@@ -7,7 +7,6 @@
 typedef struct matricies {
 	double** Asub; // Sub matrix of A
 	int size_Asub; // The number of rows passed to the worker thread
-	int numThreads; // The user defined number of threads +1 for main
 	pthread_barrier_t *barrier_worker;//Start worker threads
 	pthread_barrier_t *barrier_main;//Start main thread edits of data
 	double* q; // Input Matrix q
@@ -30,7 +29,6 @@ void* worker_thread(void* args) {
 	double* y;
 	int n = 10;
 	int k = -1;
-	int numThreads;
 	double* certainRow;
 	int size;
 	int krt, i, j;
@@ -172,7 +170,6 @@ int main(int argc, char* argv[]) {
 				tArgs[threads].k = k;//Current row entry
 				tArgs[threads].krt = k + rt;//describes the beginning row value of the submatrix 
 				tArgs[threads].n = n;//Size of Original matrix
-				tArgs[threads].numThreads = desired+1;
 				tArgs[threads].certainRow = A[k];// pointer to matrix entry at which the divisor row is
 				rt += rows;
 			}
