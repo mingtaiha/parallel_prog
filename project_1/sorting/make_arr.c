@@ -4,6 +4,10 @@
 
 #define TEST 1
 
+// This is a copy of array_gen.h, but does not have
+// the function that checks if the array is sorted
+
+// Make an array populated with random values
 int * make_arr(int size) {
 
     int i;
@@ -16,6 +20,7 @@ int * make_arr(int size) {
     return arr;
 }
 
+// Print the array
 void print_arr(int * arr, int size) {
     
     int i;
@@ -25,7 +30,7 @@ void print_arr(int * arr, int size) {
     printf("\n");
 }
 
-
+// Read the array from a file
 int * read_arr(int size, char * filename) {
 
     int * arr = (int *) malloc(sizeof(int) * size);
@@ -42,6 +47,7 @@ int * read_arr(int size, char * filename) {
     
 }
 
+// Write the array to a file
 void write_arr(int * arr, int size, char * filename) {
 
     FILE * f = fopen(filename, "wb");
@@ -55,11 +61,12 @@ void write_arr(int * arr, int size, char * filename) {
 int main(int argc, char **argv) {
 
     int size = atoi(argv[1]);
+    char * filename = argv[2];
     int * array = make_arr(size);
 //    print_arr(array, size);
-    write_arr(array, size, "arr_test.dat");
+    write_arr(array, size, filename);
 
-    int * array2 = read_arr(size, "arr_test.dat");
+    int * array2 = read_arr(size, filename);
 //    print_arr(array2, size);
  
     return 0;

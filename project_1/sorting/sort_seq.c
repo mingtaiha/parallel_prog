@@ -6,6 +6,10 @@
 int * array;
 
 
+// NOTE: The algorithms only work on arrays with aith a length that is
+// a power of 2
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Quicksort

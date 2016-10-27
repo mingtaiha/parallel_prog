@@ -7,6 +7,7 @@
 
 #define TEST 0
 
+// Make an array populated with random values
 int * make_arr(int size) {
 
     int i;
@@ -19,6 +20,7 @@ int * make_arr(int size) {
     return arr;
 }
 
+// Print the array
 void print_arr(int * arr, int size) {
     
     int i;
@@ -28,7 +30,7 @@ void print_arr(int * arr, int size) {
     printf("\n");
 }
 
-
+// Read the array from a file
 int * read_arr(int size, char * filename) {
 
     int * arr = (int *) malloc(sizeof(int) * size);
@@ -45,6 +47,7 @@ int * read_arr(int size, char * filename) {
     
 }
 
+// Write the array to a file
 void write_arr(int * arr, int size, char * filename) {
 
     FILE * f = fopen(filename, "wb");
@@ -52,15 +55,17 @@ void write_arr(int * arr, int size, char * filename) {
     fclose(f);
 }
 
+// Checks if an array is sorted
 void is_arr_sorted(int * arr, int size) {
 
     int i;
     for (i = 1; i < size; i++) {
         if (arr[i] < arr[i-1]) {
             printf("Array is not sorted\n");
-            return;
+            return; // Exit if not sorted
         }
     }
+    // Prints only when array is sorted
     printf("Array is sorted\n");
 }
 
@@ -71,11 +76,12 @@ void is_arr_sorted(int * arr, int size) {
 int main(int argc, char **argv) {
 
     int size = atoi(argv[1]);
+    char * filename = argv[2];
     int * array = make_arr(size);
     print_arr(array, size);
-    write_arr(array, size, "arr_test.dat");
+    write_arr(array, size, filename);
 
-    int * array2 = read_arr(size, "arr_test.dat");
+    int * array2 = read_arr(size, filename);
     print_arr(array2, size);
  
     return 0;

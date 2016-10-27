@@ -7,15 +7,21 @@
 int * array;
 
 
+// NOTE: The algorithms only work on arrays with aith a length that is
+// a power of 2
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Quicksort
 
+
+// The argument struct that is passed around when calling quicksort
 typedef struct q_struct{
-    int * arr;
-    int lo;
-    int hi;
-    int layers;
+    int * arr;      // The array
+    int lo;         // The leftmost index of the subarray
+    int hi;         // The rightmost index of the subarray
+    int layers;     // The number of layers of the recursive function call
 } Q_STRUCT;
 
 // The partitioning helping function. The function assumes that the array
@@ -56,16 +62,22 @@ int partition(int * arr, int lo, int hi) {
 
 void * q_sort(void * q_args) {
     
+    // Making a local copy of the arguments
     Q_STRUCT * input = (Q_STRUCT *) q_args;
     int * arr = input->arr;
     int lo = input->lo;
     int hi = input->hi;
     int layers = input->layers;
 
+    // If the subarray is not the empty list, partition array and recursively
+    // call quicksort
     if (lo < hi) {
         
+        // Partition the array
         int pivot = partition(arr, lo, hi);
 
+        // Defining argument structs to call quicksort on left and right
+        // subarray, split by the pivot element
         Q_STRUCT left_input, right_input;
         left_input.arr = arr;
         left_input.lo = lo;
@@ -75,19 +87,27 @@ void * q_sort(void * q_args) {
         right_input.hi = hi;
 
         //printf("%d\t", layers);
+
+        // If layers == 0, then do not create new threads, run sequentially
         if (layers == 0) { 
             left_input.layers = 0;
             right_input.layers = 0;
             q_sort(&left_input);
             q_sort(&right_input);
         
-        } else {
+        } 
+        // If layers > 0, then we can create more threads. The max number
+        // of threads created is 2^(layers) - 1
+        else {
 
+            // Decrease the number of layers. Every time threads will be made
+            // decrease the number of threads that will be created subsequently
             left_input.layers = layers - 1;
             right_input.layers = layers - 1;
             pthread_t tid_l, tid_r;
             int ret;
 
+            // Create threads to run quicksort on subarrays
             ret = pthread_create(&tid_l, NULL, q_sort, &left_input);
             if (ret) {
                 printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
@@ -100,6 +120,8 @@ void * q_sort(void * q_args) {
                 exit(1);
             }
 
+            // Wait for the quicksort of the two subarrays to finish before
+            // exiting the function
             pthread_join(tid_l, NULL);
             pthread_join(tid_r, NULL);
         }
@@ -127,13 +149,15 @@ void quicksort(int * arr, int size, int layers) {
 
 // Bitonic Sort
 
+
+// The argument struct that is passed around when calling quicksort
 typedef struct {
-    int * arr;
-    int lo;
-    int count;
-    int is_up;
-    int layer;
-    int max_layers;
+    int * arr;          // The array
+    int lo;             // The leftmost array
+    int count;          // The number of elements to sort
+    int is_up;          // The sorting direction. 1 Ascending, 0 Descending
+    int layer;          // The number of layers of merge function can be called
+    int max_layers;     // The total number of layer of threads that can be made
 } B_STRUCT;
 
 // This function decides how the swapping should occur. is_up denotes whether
@@ -162,6 +186,7 @@ void dir_swap(int * arr, int i, int j, int is_up) {
 
 void * b_merge(void * b_args) {
 
+    // Making a local copy of the arguments
     B_STRUCT * input = (B_STRUCT *) b_args;
     int * arr = input->arr;
     int lo = input->lo;
@@ -170,14 +195,17 @@ void * b_merge(void * b_args) {
     int layer = input->layer;
     int max_layers = input->max_layers;
     
+    // Sort if there is more than one element
     if (count > 1) {
         int k = count / 2;
 
+        // Swap elements to follow the indicated order (Ascending/Descendign)
         int i;
         for (i = lo; i < lo+k; i++) {
             dir_swap(arr, i, i + k, is_up);
         }
 
+        // Defining argument structs for the two merging function calls
         B_STRUCT merge_input1, merge_input2;
 
         merge_input1.arr = arr;
@@ -192,19 +220,25 @@ void * b_merge(void * b_args) {
         merge_input2.is_up = is_up;
         merge_input2.max_layers = max_layers;
         
+        // If no more layers can be created (layers <= 0), sort sequentially
         if (layer <= 0) {
             merge_input1.layer = 0;
             merge_input2.layer = 0;
             b_merge(&merge_input1);
             b_merge(&merge_input2);
         } 
+        // If layers > 0, create threads to merge in parallel. 2^(layers) - 1
+        // will be created for merging
         else {
             
+            // Decrease the number of layers. Every time threads will be made
+            // decrease the number of threads that will be created subsequently
             merge_input1.layer = layer - 1;
             merge_input2.layer = layer - 1;
             pthread_t thr_merge1, thr_merge2;
             int ret;
 
+            // Create threads to run bitonic merge in parallel
             ret = pthread_create(&thr_merge1, NULL, b_merge, &merge_input1);
             if (ret) {
                 printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
@@ -217,6 +251,7 @@ void * b_merge(void * b_args) {
                 exit(1);
             }
 
+            // Wait for the bitonic merge threads before exiting
             pthread_join(thr_merge1, NULL);
             pthread_join(thr_merge2, NULL);
         }
@@ -230,6 +265,7 @@ void * b_merge(void * b_args) {
 
 void * b_sort(void * b_args) {
  
+    // Making a local copy of the arguments
     B_STRUCT * input = (B_STRUCT *) b_args;
     int * arr = input->arr;
     int lo = input->lo;
@@ -238,9 +274,11 @@ void * b_sort(void * b_args) {
     int layer = input->layer;
     int max_layers = input->max_layers;
 
+    // Sort if there is more than one element
     if (count > 1) {
         int k = count / 2;
 
+        // Defining argument structs for the two merging function calls
         B_STRUCT up_input, down_input;
         
         up_input.arr = arr;
@@ -255,36 +293,46 @@ void * b_sort(void * b_args) {
         down_input.is_up = 0;
         down_input.max_layers = max_layers;
         
+        // If the number of thread layers are at least the number of
+        // maximum number of thread layers specified to create, sort
+        // sequentially
         if (layer >= max_layers) {
             up_input.layer = max_layers;
             down_input.layer = max_layers;
             b_sort(&up_input);
             b_sort(&down_input);
         }
+        // If the number of thread layers are less than the nummber
+        // of maximum number of thread layers specified to create,
+        // create more threads
         else {
-
+            
+            // Increase the layer number to track the number of thread
+            // layers created for running bitonic sort
             up_input.layer = layer + 1;
             down_input.layer = layer + 1;
             pthread_t thr_up, thr_down;
             int ret;
 
-        // sort in ascending order since is_up is 1
+            // Sort in ascending order since is_up is 1
             ret = pthread_create(&thr_up, NULL, b_sort, &up_input);
             if (ret) {
                 printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
                 exit(1);
             }
             
-            // sort in descending ordering since is_up is 0
+            // Sort in descending ordering since is_up is 0
             ret = pthread_create(&thr_down, NULL, b_sort, &down_input);
             if (ret) {
                 printf("%d %s - unable to create thread - ret - %d\n", __LINE__, __FUNCTION__, ret);
                 exit(1);
             }
-
+            
+            // Wait for bitonic sort threads to finish
             pthread_join(thr_up, NULL);
             pthread_join(thr_down, NULL);
         }
+
         // Merge the whole sequence in ascending order since is_up is 1
         B_STRUCT merge_input;
         merge_input.arr = arr;
@@ -293,7 +341,13 @@ void * b_sort(void * b_args) {
         merge_input.is_up = is_up;
         merge_input.layer = max_layers - layer;
         merge_input.max_layers = max_layers;
-
+        
+        // NOTE: If there are 'layer' number of thread layers created
+        // to run bitonic sort, then bitonic merge can create at most 
+        // 'max_layers - layer' threads layers. This is because the
+        // number of thread layers that can be created are split between
+        // threads that run bitonic sort and those that run bitonic merge
+        // 'layers' + 'max_layers - layer' = 'max_layers'
         b_merge(&merge_input);
     }
 }
@@ -326,8 +380,9 @@ int main(int argc, char** argv) {
     char * filename = argv[2];          // Gets the filename
     int which_sort = atoi(argv[3]);     // 1 for bitonic sort, 0 for quicksort
     int layers = atoi(argv[4]);         // Number of layers to go down
+                                        // If layers == 0, then the sorting
+                                        // algorithms will be sequential
 
-    printf("%d\n", layers);
     array = read_arr(size, filename);   // Reads array from file
 
     
