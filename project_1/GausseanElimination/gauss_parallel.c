@@ -17,7 +17,7 @@ typedef struct matricies {
 	double* certainRow; // The row by which all the passed rows are to be multiplied
 	int krt;  //The row index of the beginning of the 
 	//subsection of the sub-problem to be solved that is to be passed to the worker
-	bool enable; //If there are more threads than rows at any point, we disable some threads.
+	int enable; //If there are more threads than rows at any point, we disable some threads.
 } mx;
 
 //Takes 3 matricies.
@@ -34,7 +34,7 @@ void* worker_thread(void* args) {
 	double* certainRow;
 	int size;
 	int krt, i, j;
-	bool enable;
+	int enable;
 
 	while(k < n-1){
 		//Wait for all threads to finish
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
 	int actualThreads; // Number of threads actually used.
 	int nk1; //n - k - 1
 	int rt; //Describes current row position of the submatrices
-	bool enable; //True if thread has work to do, false if not
+	int enable; //1 if thread has work to do, 0 if not
 	pthread_attr_t attr;
 	
 	pthread_attr_init(&attr);
@@ -152,14 +152,14 @@ int main(int argc, char* argv[]) {
 			if(desired > nk1){
 				if(threads < nk1){
 					rows = 1;
-					enable = true;
+					enable = 1;
 				}
 				else{
-					enable = false;
+					enable = 0;
 				}
 			}
 			if(enable){
-				tArgs[threads].enable = true;
+				tArgs[threads].enable = 1;
 				//set args
 				if (threads == desired-1) 
 					rows = nk1 - rt; // If there are more rows leftover, assign them all to the last worker
@@ -172,13 +172,13 @@ int main(int argc, char* argv[]) {
 				tArgs[threads].k = k;//Current row entry
 				tArgs[threads].krt = k + rt;//describes the beginning row value of the submatrix 
 				tArgs[threads].n = n;//Size of Original matrix
-				tArgs[threads].numThreads = desired+1
+				tArgs[threads].numThreads = desired+1;
 				tArgs[threads].certainRow = A[k];// pointer to matrix entry at which the divisor row is
 				rt += rows;
 			}
 			else{
 				//if disabled, we have no rows to give.
-				tArgs[threads].enable = false;
+				tArgs[threads].enable = 0;
 			}
 		}//All thread arguments set properly
 
