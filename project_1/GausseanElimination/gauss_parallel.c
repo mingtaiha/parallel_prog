@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 			actualThreads = desired;
 			leftover = nk1 - rows*(actualThreads-1);
 		}
-		if(k>n-1){
+		if(k<n-1){//This should always be true, but just in case...
 			for (threads = 0; threads < actualThreads; threads++) {
 				if (threads == desired-1) 
 					rows = leftover; 
