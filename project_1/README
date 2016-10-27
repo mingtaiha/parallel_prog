@@ -1,0 +1,71 @@
+This repository contains the relevant documents for Project 1 - Pthreads
+
+Authors: Ming Tai Ha, Allen Tung
+
+This repository is broken up into two subdirectories. The code for the 
+sequential and parallel impelementations of quicksort and bitonic sort 
+is contained in ./sorting, and the Gaussian Elimination is contained in
+./GaussianElimination.
+
+/////////// Sorting /////////// Sorting /////////// 
+
+The sorting algorithms only work for arrays with a size that is a power
+of 2. There are arrays which have been prepared for testing.
+
+To run the sorting algorithm code:
+1) Go to the directory ./sorting
+2) Run `make` (run `make clean` if needed)
+2a) If you want to create your own array, use the command:
+    `/make_arr.o <size> <array_filename>
+    size - denotes the size of the array you want to create
+    array_filename - denotes the name of the file to which you want to 
+        store your array
+    
+    ***NOTE: This program has no restrictions on the size of the array you
+        want to make, but the sorting algorithms will only work for arrays 
+        with a size that is a power of 2
+
+
+3) To run the sequential sorting implementations, use the command:
+    `./sort_seq.o <size> <array_file> <sorting_algorithm>`
+   
+    size - denotes the size of the array you want to sort
+    array_file - denote the array which you want to sort. The parameter 
+        `size` is assumed to equal the length of the array stored in
+        `array_file`. Breaking this assumption will result in undefined
+        behavior
+    sorting_algorithm - 0 for quicksort, 1 for bitonic sort
+
+    The results will show the time to sort the algorithm
+
+
+4) To run the parallel soritng implementations, use the command:
+    `./sort_par.o <size> <array_file> <sorting_algorithm> <thread_layers>`
+
+    size - denotes the size of the array you want to sort
+    array_file - denote the array which you want to sort. The parameter 
+        `size` is assumed to equal the length of the array stored in
+        `array_file`. Breaking this assumption will result in undefined
+        behavior
+    sorting_algorithm - 0 for quicksort, 1 for bitonic sort
+    thread_layers - Controls the number of threads to create. The parallel 
+        implementations will use 2^(layers + 1) - 1 threads to sort the 
+        array. 
+        For example, when layers == 0, then only 1 thread will be 
+        used and the sorting algorithm will be sequential (the time to 
+        sort the array may be higher due to the copy and storing local
+        copies of the argument struct that is passed). 
+        When layer == 1, then 3 threads will be created
+        When layer == 2, then 7 threads will be created
+        And so on...
+        
+        ***NOTE: Be careful with the number of thread layers you specify.
+            THe number of threads created grows exponentially
+    
+    The results will show the time to sort the algorithm
+
+////////////// Gaussian Elimination  ////////////// 
+
+
+
+
