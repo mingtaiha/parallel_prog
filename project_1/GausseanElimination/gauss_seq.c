@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]) {
 	if ( argc != 2)
 	{
-		printf("Too few arguments. Please supply n of an nxn square matrix");
+		printf("Wrong number of args. Please supply only n of an nxn square matrix");
 		return -1;
 	}	
 	clock_t start = clock(), diff;
