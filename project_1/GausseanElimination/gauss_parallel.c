@@ -8,7 +8,7 @@ typedef struct matricies {
 	double** Asub; // Sub matrix of A
 	int size_Asub; // The number of rows passed to the worker thread
 	pthread_barrier_t *barrier_worker;//Start worker threads
-	pthread_barrier_t *barrier_main;//Start main thread edits of data
+//	pthread_barrier_t *barrier_main;//Start main thread edits of data
 	double* q; // Input Matrix q
 	double* y;  //Input Matrix y
 	int k; // The current row index, from 0 to n-1
@@ -23,7 +23,7 @@ typedef struct matricies {
 void* worker_thread(void* args) {
 	mx* data = (mx*)args;
 	pthread_barrier_t *barrier_worker = data->barrier_worker;
-	pthread_barrier_t *barrier_main = data->barrier_main;
+//	pthread_barrier_t *barrier_main = data->barrier_main;
 	double** A;
 	double* q;
 	double* y;
@@ -57,7 +57,10 @@ void* worker_thread(void* args) {
 				if(k > 0) A[i][k-1] = 0; // Ensure rounding errors do not affect the RREF form
 			}
 		}
-		pthread_barrier_wait(barrier_main);//Tell the main thread you're done so it can fiddle with data
+		
+                pthread_barrier_wait(barrier_worker);
+
+		//pthread_barrier_wait(barrier_main);//Tell the main thread you're done so it can fiddle with data
 	}
 
 	return NULL;
@@ -111,15 +114,15 @@ int main(int argc, char* argv[]) {
 	pthread_barrier_t *barrier_worker = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
 	pthread_barrier_init(barrier_worker, NULL, desired+1); //Initialize the worker thread barrier
 
-	pthread_barrier_t *barrier_main = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
-	pthread_barrier_init(barrier_main, NULL, desired+1); //Initialize the main thread barrier
+//	pthread_barrier_t *barrier_main = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
+//	pthread_barrier_init(barrier_main, NULL, desired+1); //Initialize the main thread barrier
 	actualThreads = desired+1; // We have (desired) worker threads and (1) main thread
 
 	//Create the threads with the barrier, pass other parameters in later
 	//Have the threads wait at the barrier for the data, then read and do their work.
 	for (threads = 0; threads < actualThreads; threads++) {
 		tArgs[threads].barrier_worker = barrier_worker;
-		tArgs[threads].barrier_main = barrier_main;
+//		tArgs[threads].barrier_main = barrier_main;
 		tArgs[threads].enable = 0;
 		//Pass in only the barriers at first
 		//Should be threadsafe, as no entry is modified by more than one worker.
@@ -187,7 +190,9 @@ int main(int argc, char* argv[]) {
 		pthread_barrier_wait(barrier_worker);
 
 		//Wait for the workers to all finish before we start changing the data
-		pthread_barrier_wait(barrier_main);
+//		pthread_barrier_wait(barrier_main);
+
+                pthread_barrier_wait(barrier_worker);
 
 	}// Matrix in rref form
 
@@ -203,7 +208,7 @@ int main(int argc, char* argv[]) {
 		backup_handles[threads] = 0;
 	}*/
 	//	Free the barriers
-	pthread_barrier_destroy(barrier_main);
+//	pthread_barrier_destroy(barrier_main);
 	pthread_barrier_destroy(barrier_worker);
 	//	Free all the malloced variables
 	for(i = 0; i < n; i++){
