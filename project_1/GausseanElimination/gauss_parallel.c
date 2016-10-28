@@ -54,6 +54,7 @@ void* worker_thread(void* args) {
 		                        A[i][j] = A[i][j] - certainRow[j] * A[i][k];
 				}
 				q[krt+i] = q[krt+i] - y[krt] * A[i][k];// Commit adjusted q value
+				if(k > 0) A[i][k-1] = 0; // Ensure rounding errors do not affect the RREF form
 			}
 		}
 		pthread_barrier_wait(barrier_main);//Tell the main thread you're done so it can fiddle with data
@@ -70,10 +71,9 @@ int main(int argc, char* argv[]) {
 	}
 	int n = atoi(argv[1]);
 	int desired = atoi(argv[2]);
-	double* y; // Input y
 	int k; //Current row index, from 0 to n-1
 	int i; // incrementer
-	void* res;// result
+	//void* res;// result
 	int threads; // The thread index
 	int rows; // The number of rows left that we're passing to workers
 	int actualThreads; // Number of threads actually used.
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 	if(A == NULL){printf("malloc failed");return -1;}
         double* q = (double*)malloc(n*sizeof(double));
 	if(q == NULL){printf("malloc failed");return -1;}
-	y = (double*)malloc(n*sizeof(double)); // Initial values of y are irrelevant, y is overwritten and never read until written to. 
+	double* y = (double*)malloc(n*sizeof(double)); // Initial values of y are irrelevant, y is overwritten and never read until written to. 
 	if(y == NULL){printf("malloc failed"); return -1;}
 
 	//Array generation
@@ -108,10 +108,10 @@ int main(int argc, char* argv[]) {
 	pthread_t *thread_handles = (pthread_t*) calloc(2*desired,sizeof(pthread_t));
 	pthread_t *backup_handles = (pthread_t*) calloc(2*desired,sizeof(pthread_t));
 
-	pthread_barrier_t *barrier_worker;// = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
+	pthread_barrier_t *barrier_worker = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
 	pthread_barrier_init(barrier_worker, NULL, desired+1); //Initialize the worker thread barrier
 
-	pthread_barrier_t *barrier_main;// = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
+	pthread_barrier_t *barrier_main = (pthread_barrier_t*) calloc(1, sizeof(pthread_barrier_t));
 	pthread_barrier_init(barrier_main, NULL, desired+1); //Initialize the main thread barrier
 	actualThreads = desired+1; // We have (desired) worker threads and (1) main thread
 
@@ -120,6 +120,7 @@ int main(int argc, char* argv[]) {
 	for (threads = 0; threads < actualThreads; threads++) {
 		tArgs[threads].barrier_worker = barrier_worker;
 		tArgs[threads].barrier_main = barrier_main;
+		tArgs[threads].enable = 0;
 		//Pass in only the barriers at first
 		//Should be threadsafe, as no entry is modified by more than one worker.
 		if(pthread_create(&thread_handles[threads], &attr, &worker_thread,
@@ -143,12 +144,13 @@ int main(int argc, char* argv[]) {
 		nk1 = n-k-1;
 		//	Hand each thread n/desired consecutive rows; one thread per CPU, and process the elimination.
 		rows = (nk1) / desired;
-		rt = 0;
+		rt = 1;// We skip the kth row, since we don't subtract it from itself.
+		if(k == n-1){break;}// In this case, we are on the last row, and all we needed to do was to divide it by its first number
 		//Calculate the number of threads we really need.
 		for (threads = 0; threads < desired; threads++) {
 		// If we have more threads than rows, give each thread 1 row and disable the rest
 			if(desired > nk1){
-				if(threads < nk1){
+				if(threads > nk1){
 					rows = 1;
 					enable = 1;
 				}
@@ -159,9 +161,10 @@ int main(int argc, char* argv[]) {
 			if(enable){
 				tArgs[threads].enable = 1;
 				//set args
+				if(k+rt >= n-1){tArgs[threads].enable = 0;}
 				if (threads == desired-1) 
 					rows = nk1 - rt; // If there are more rows leftover, assign them all to the last worker
-				tArgs[threads].Asub = &A[k+rt+1];
+				tArgs[threads].Asub = &A[k+rt];
 				//The pointer to the first array entry of the worker thread's submatrix
 				tArgs[threads].size_Asub = rows;
 				//Number of rows of said submatrix
@@ -177,6 +180,7 @@ int main(int argc, char* argv[]) {
 				//if disabled, we have no rows to give.
 				tArgs[threads].enable = 0;
 			}
+			enable = 1;
 		}//All thread arguments set properly
 
 		//Signal threads to begin working.
@@ -187,7 +191,8 @@ int main(int argc, char* argv[]) {
 
 	}// Matrix in rref form
 
-	//	Clean up the threads.
+	//	Clean up the threads?
+	/*
 	for (threads = 0; threads<actualThreads; threads++) {
 		if(backup_handles[threads]!=0){
 			//printf("Attempting pthread join of thread: %d\n", threads);
@@ -196,7 +201,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		backup_handles[threads] = 0;
-	}
+	}*/
 	//	Free the barriers
 	pthread_barrier_destroy(barrier_main);
 	pthread_barrier_destroy(barrier_worker);
@@ -204,7 +209,7 @@ int main(int argc, char* argv[]) {
 	for(i = 0; i < n; i++){
 		free(A[i]);
 	}
-	free(A); free(y); free(q);
+	//free(A); free(y); free(q);
 	free(thread_handles);
 	free(backup_handles);
 
