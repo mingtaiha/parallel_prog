@@ -39,7 +39,7 @@ To run the sorting algorithm code:
     The results will show the time to sort the algorithm
 
 
-4) To run the parallel soritng implementations, use the command:
+4) To run the parallel sorting implementations, use the command:
     `./sort_par.o <size> <array_file> <sorting_algorithm> <thread_layers>`
 
     size - denotes the size of the array you want to sort
@@ -66,6 +66,26 @@ To run the sorting algorithm code:
 
 ////////////// Gaussian Elimination  ////////////// 
 
+To run the sequential code:
+1) Go to the directory ./GausseanElimination
+2) Run `make` (run `make clean` if needed)
+3) Use the command:
+    `./gauss_sequential <size> '   
+    size - denotes the size of the nxn array you want to sort
+
+To run the parallel code:
+1) Go to the directory ./GausseanElimination
+2) Run `make` (run `make clean` if needed)
+3) Use the command:
+    `./gauss_parallel <size> <threads>'   
+    size - denotes the size of the nxn array you want to sort
+    
+    threads - denotes the number of threads desired for parallelization. 
+              The recommended number of threads is 1 per core.
+    
+A non seeded pseudo randomized array will be generated with the rand function to populate the array.
+    
+The results will show the time to sort the algorithm
 
 
 
