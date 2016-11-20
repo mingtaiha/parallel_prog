@@ -4,34 +4,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 
-#define SIZE 15000000
+#define SIZE 30000000
 
 #define TEST 0
-
-float * make_array() {
-	
-	float * array = (float *) malloc(SIZE * sizeof(float));
-	srand(time(NULL));
-	
-	int i;
-	for (i = 0; i < SIZE; i++) {
-		array[i] = (float)rand() / (float)RAND_MAX * 5;
-	}
-	return array;
-}
-
-float * sqrt_array(float * array) {
-
-	float * sqrt_array  = (float *) malloc(SIZE * sizeof(float));
-	
-	int i;
-	for (i = 0; i < SIZE; i++) {
-		sqrt_array[i] = sqrt(array[i]);
-	}
-	return sqrt_array;
-}
 
 void print_array(float * array) {
 	
