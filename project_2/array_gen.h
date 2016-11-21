@@ -5,9 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SIZE 30000000
-
 #define TEST 0
+
 
 void print_array(float * array) {
 	
@@ -18,7 +17,7 @@ void print_array(float * array) {
 	printf("\n");
 }
 
-void write_array(float * array, char * filename) {
+void write_array(float * array, char * filename, int SIZE) {
 
 	FILE *f = fopen(filename, "wb");
 	printf("Writing Array\n");
@@ -26,7 +25,7 @@ void write_array(float * array, char * filename) {
 	fclose(f);
 }
 
-float * read_array(char * filename) {
+float * read_array(char * filename, int SIZE) {
 
 	float * array = (float *) malloc(SIZE * sizeof(float));
 	FILE *f = fopen(filename, "rb");
@@ -40,26 +39,6 @@ float * read_array(char * filename) {
 		fread(array, sizeof(float), SIZE, f);
 	}
 	return array;
-}
-
-#endif
-
-#if TEST
-
-int main() {
-
-	char arr_name[] = "arr_15m.dat";
-	char sqrt_arr_name[] = "sqrt_arr_15m.dat";
-	float * arr = make_array();
-	float * sqrt_arr = sqrt_array(arr);
-
-	write_array(arr, arr_name);
-	write_array(sqrt_arr, sqrt_arr_name);
-	float * arr2 = read_array(arr_name);
-	float * sqrt_arr2 = read_array(sqrt_arr_name);
-	print_array(arr2);
-	print_array(sqrt_arr2);
-	return 0;
 }
 
 #endif

@@ -13,7 +13,7 @@ task void threaded_newton_task(uniform float size, uniform float threads, unifor
     	int threadStart = i*threadSpan;
     	int threadEnd = (i+1)*threadSpan;
     	int j;
-    	if(i = threads-1){
+    	if(i == threads-1){
     		threadEnd = end;
     	}
     	for(j = start; j < end; j++){
@@ -47,22 +47,16 @@ task void newton_task(uniform float size, uniform float arr[], uniform float app
 	}
 }
 void threaded_newton(uniform float size, uniform float threads, uniform float arr[], uniform float appx_arr[]) {
-	uniform int span = size / (taskCount+1);
-	uniform int start = taskIndex * span;
-    uniform int end = (taskIndex+1) * span;
-
-	if(taskIndex == taskCount-1){
-		end = size;
-	}
-    foreach (i = start ... threads) {
-    	int threadSpan = span / threads;
+	
+    foreach (i = 0 ... threads) {
+    	int threadSpan = size / threads;
     	int threadStart = i*threadSpan;
     	int threadEnd = (i+1)*threadSpan;
     	int j;
-    	if(i = threads-1){
-    		threadEnd = end;
+    	if(i == threads-1){
+    		threadEnd = size;
     	}
-    	for(j = start; j < end; j++){
+    	for(j = 0; j < size; j++){
 			float x = arr[j];
 			float xprev = 0;
 			while (abs(x - xprev) > TOLERANCE) {
@@ -75,14 +69,7 @@ void threaded_newton(uniform float size, uniform float threads, uniform float ar
 }
 
 void newton(uniform float size, uniform float arr[], uniform float appx_arr[]) {
-	uniform int span = size / (taskCount+1);
-	uniform int start = taskIndex * span;
-    uniform int end = (taskIndex+1) * span;
-
-	if(taskIndex == taskCount-1){
-		end = size;
-	}
-    foreach (i = start ... end) {
+    foreach (i = 0 ... size) {
 		float x = arr[i];
 		float xprev = 0;
 		while (abs(x - xprev) > TOLERANCE) {

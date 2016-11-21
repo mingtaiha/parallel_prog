@@ -8,18 +8,16 @@
 float * arr;
 float * sqrt_arr;
 float * appx_arr;
-int size = 30000000;
 float tolerance = 0.0001;
 
-
-void * newton_seq() {
+void * newton_seq(int size) {
 
 	int start = 0;
 	int end = size;
 	
 	int i;
 	for (i = start; i < end; i++) {
-		float x = arr[i];
+        float x = arr[i];
 		while (fabs(x - sqrt_arr[i]) > tolerance) {
 			x = x - (((x * x) - arr[i]) / (2 * x));
 		}
@@ -27,19 +25,24 @@ void * newton_seq() {
 	}
 }
 
-int main() {
+int main(int argc, char * argv[]) {
 
-	char arr_name[] = "arr_30m.dat";
-	char sqrt_arr_name[] = "sqrt_arr_30m.dat";
-	arr = read_array(arr_name);
-	sqrt_arr = read_array(sqrt_arr_name);	
-	appx_arr = (float *) malloc(size * sizeof(float));
-	
+	char * arr_name = argv[1];
+	char * sqrt_arr_name = argv[2];
+    int size = atoi(argv[3]);    
+
+    arr = read_array(arr_name, size);
+	sqrt_arr = read_array(sqrt_arr_name, size);	
+    appx_arr = (float *) malloc(size * sizeof(float));
+
+    print_array(arr);
+    print_array(sqrt_arr);
+
 	clock_t start, end;
 	double cpu_time_used;
 
 	start = clock();
-	newton_seq();
+	newton_seq(size);
 	end = clock();
 	cpu_time_used = (((double) end) - ((double) start)) / CLOCKS_PER_SEC;
 

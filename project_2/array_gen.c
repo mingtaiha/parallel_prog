@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#define SIZE 30000000
 
+int SIZE;
 
 float * make_array() {
 	
@@ -62,11 +62,13 @@ float * read_array(char * filename) {
 	return array;
 }
 
-int main() {
+int main(int argc, char * argv[]) {
 
-	char arr_name[] = "arr_30m.dat";
-	char sqrt_arr_name[] = "sqrt_arr_30m.dat";
-	float * arr = make_array();
+	char * arr_name = argv[1];
+	char * sqrt_arr_name = argv[2];
+    SIZE = atoi(argv[3]);
+	
+    float * arr = make_array();
 	float * sqrt_arr = sqrt_array(arr);
 
 	print_array(arr);

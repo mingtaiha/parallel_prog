@@ -5,10 +5,7 @@
 #include <pthread.h>
 #include "array_gen.h"
 
-#define NUM_THREADS 4
-#define ARR_SIZE 30000000
 #define TOLERANCE 0.0001
-
 
 
 typedef struct thr_arg {
@@ -18,7 +15,8 @@ typedef struct thr_arg {
 } thr_arg;
 
 
-
+int ARR_SIZE;
+int NUM_THREADS;
 float * arr;
 float * sqrt_arr;
 //float * appx_arr;
@@ -28,7 +26,7 @@ thr_arg * arg_arr;
 void define_args() {
 
 	arg_arr = malloc(NUM_THREADS * sizeof(thr_arg));
-	int equal_piece = SIZE / NUM_THREADS;
+	int equal_piece = ARR_SIZE / NUM_THREADS;
 	
 	int i;
 	for (i = 0; i < NUM_THREADS; i++) {
@@ -55,12 +53,17 @@ void * newton_thr(void * args) {
 	}
 }
 
-int main() {
+int main(int argc, char ** argv) {
 
-	char arr_name[] = "arr_30m.dat";
-	char sqrt_arr_name[] = "sqrt_arr_30m.dat";
-	arr = read_array(arr_name);
-	sqrt_arr = read_array(sqrt_arr_name);	
+	char * arr_name = argv[1];
+	char * sqrt_arr_name = argv[2];
+    ARR_SIZE = atoi(argv[3]);
+    NUM_THREADS = atoi(argv[4]);
+    printf("size: %d\n", ARR_SIZE);
+    printf("Num Threads: %d\n", NUM_THREADS);
+
+	arr = read_array(arr_name, ARR_SIZE);
+	sqrt_arr = read_array(sqrt_arr_name, ARR_SIZE);	
 	//appx_arr = (float *) malloc(ARR_SIZE * sizeof(float));
 
 	define_args();
