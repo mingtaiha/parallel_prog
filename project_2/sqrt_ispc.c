@@ -15,13 +15,19 @@ float size = SIZE;
 
 
 int main(int argc, char* argv[] ) {
-	if(argc!=2){
-		printf("Please enter only one integer argument, the number of cores.");
+	if(argc!=3){
+		printf("syntax: ./sqrt_ispc [cores] [threads]");
 		return -1;
 	}
 	int cores = atoi(argv[1]);
 	//Could error check on cores here.
-	if(cores < 1 || cores > 8){
+	if(cores < 1){
+		printf("Invalid number of cores.");
+		return -1;
+	}
+	int threads = atoi(argv[2]);
+	//Could error check on cores here.
+	if(threads < 1){
 		printf("Invalid number of cores.");
 		return -1;
 	}
@@ -31,7 +37,7 @@ int main(int argc, char* argv[] ) {
 	sqrt_arr = read_array(sqrt_arr_name);	
 	appx_arr = (float *) calloc(SIZE * sizeof(float));
 	clock_t begin = clock();
-	newton_ispc(size, 4, arr, appx_arr);
+	newton_ispc(size, threads, cores, arr, appx_arr);
 	clock_t end = clock();
 	double time = (double) (end-begin) / CLOCKS_PER_SEC;
 	
