@@ -17,6 +17,9 @@ Time taken: 0.594615
 Image is saved to: 
 Group3ISPC.ndz
 
+Threaded image is saved to:
+Group3ISPCwithThreading.ndz
+
 Raw data:
 root@node1-1:~# ./sqrt_ispc 1 1
 Reading Array
