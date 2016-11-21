@@ -1,10 +1,13 @@
 #define TOLERANCE 0.0001
 
-
-
-export void newton_ispc(uniform float size, uniform float arr[], uniform float appx_arr[]) {
-
-	foreach (i = 0 ... size) {
+task void newton_task(uniform float size, uniform float arr[], uniform float appx_arr[]) {
+	uniform int span = size / (taskCount+1);
+	uniform int start = taskIndex * span;
+    uniform int end = (taskIndex+1) * span;
+	if(taskIndex == taskCount-1){
+		end = size;
+	}
+    foreach (i = start ... end) {
 		float x = arr[i];
 		float xprev = 0;
 		while (abs(x - xprev) > TOLERANCE) {
@@ -13,4 +16,8 @@ export void newton_ispc(uniform float size, uniform float arr[], uniform float a
 		}
 		appx_arr[i] = x;
 	}
+}
+
+export void newton_ispc(uniform float size, uniform int cores, uniform float arr[], uniform float appx_arr[]) {  
+	launch[cores] newton_task( size, arr, appx_arr);
 }
