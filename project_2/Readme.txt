@@ -20,6 +20,12 @@ Group3ISPC.ndz
 Threaded image is saved to:
 Group3ISPCwithThreading.ndz
 
+To load image:
+
+omf load -t all -i Group3ISPCwithThreading.ndz
+omf tell -a on -t all
+
+
 Raw data:
 root@node1-1:~# ./sqrt_ispc 1 1
 Reading Array
