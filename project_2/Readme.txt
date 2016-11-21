@@ -1,5 +1,7 @@
 To compile the ISPC part of it:
 
+ispc newton.ispc -o newton_ispc.o
+
 root@node1-11:~# g++ -Wall -Werror sqrt_ispc.c newton_ispc.o tasksys.o -o sqrt_ispc -lpthread
 
 To run:
