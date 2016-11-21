@@ -26,11 +26,6 @@ int main(int argc, char* argv[] ) {
 		return -1;
 	}
 	int threads = atoi(argv[2]);
-	//Could error check on cores here.
-	if(threads < 1){
-		printf("Invalid number of cores.");
-		return -1;
-	}
 	char arr_name[] = "arr_15m.dat";
 	char sqrt_arr_name[] = "sqrt_arr_15m.dat";
 	arr = read_array(arr_name);
