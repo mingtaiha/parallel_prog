@@ -1,0 +1,9 @@
+ISPC Implementation:
+
+The main function of the ispc version essentially differs only in the function call to compute the square root. Rather than calling a sequential function, an external ISPC function is called, defined by newton.ispc. In this external file, we have an external function that creates a number of tasks equivalent to the 'cores' input argument specified by the user. The tasks are begun with the ispc launch command, and the task is also defined in newton.ispc. Input arguments to the task include an input array, an output array, the number of elements in the array, the number of cores desired, and the number of threads desired. In each task, one has access to the taskIndex and taskCount variables, which may be used to determine what indices of the array to process. The user defined number of threads are launched to process data in parallel; with ISPC intrinsics, one thread may safely be launched for each element in the array. The user should only define a number of threads lower than the size of the matrix for defined operation. The user may specify a negative number to launch one thread for each element.
+tasksys.cpp from the example files included in the ISPC folder was compiled and linked in order to use the launch functionality of ISPC.
+
+#Calculate speedup here. I haven't run the sequential code yet. 
+
+
+Using the foreach construct of ISPC should thread the process, allowing it to run in a SIMD fashion. This will achieve a speedup on the square root program, because each core has a vector SIMD unit that can run on instruction over multiple pieces of data simultaneously. Writing the program as such allows us to take advantage of the SIMD unit of one core, and thereby speed up the program. Running the program on multiple cores would allow us to exploit more SIMD units, and run more instructions concurrently. It follows that the program will execute in less time if it had more processing units. 
