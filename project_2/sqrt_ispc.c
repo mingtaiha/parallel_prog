@@ -4,37 +4,35 @@
 #include <time.h>
 #include "array_gen.h"
 #include "newton.h"
-
-
 float * arr;
 float * appx_arr;
 float tolerance = 0.0001;
+float size = SIZE;
 
-int main(int argc, char* argv[] ) {
-	if(argc!=5){
-		printf("syntax: ./sqrt_ispc [array] [num elements to inspect] [cores] [threads]");
-		return -1;
-	}
-	char * arr_name = argv[1];
-	float size = atoi(argv[2]);
-	int cores = atoi(argv[3]);
-	//Could error check on cores here.
-	if(cores < 1){
-		printf("Invalid number of cores.");
-		return -1;
-	}
-	int threads = atoi(argv[4]);
-	arr = read_array(arr_name);
-	sqrt_arr = read_array(sqrt_arr_name);	
-	appx_arr = (float *) calloc(SIZE * sizeof(float));
-	clock_t begin = clock();
-	newton_ispc(size, threads, cores, arr, appx_arr);
-	clock_t end = clock();
-	double time = (double) (end-begin) / CLOCKS_PER_SEC;
-	
-	print_array(sqrt_arr);
-	printf("\n");
-	print_array(appx_arr);
-	printf("%f\n",time);
-	return 0;
+int main(){
+        clock_t begin;
+        clock_t end;
+        double time;
+        double base=0;
+        char arr_name[] = "arr_30m.dat";
+        arr = read_array(arr_name);
+        appx_arr = (float *) calloc(SIZE, sizeof(float));
+        for(int cores = 1; cores < 9; cores++){
+                for(int threads = 1; threads < 9; threads++){
+                        begin = clock();
+                        ispc::newton_ispc(size, threads, cores, arr, appx_arr);
+                        end = clock();
+                        time = (double) (end-begin) / CLOCKS_PER_SEC;
+                        if(cores == 1 && threads == 1){
+                                base = time;
+                        }
+                        printf("Cores: %d, Threads: %d, Time taken: %f, Speedup: %f\n",cores,threads,time,base/time);
+                }
+                begin = clock();
+                ispc::newton_ispc(size, -1, cores, arr, appx_arr);
+                end = clock();
+                time = (double) (end-begin) / CLOCKS_PER_SEC;
+                printf("Cores: %d, Threads: All, Time taken: %f, Speedup: %f\n",cores,time,base/time);
+        }
+        return 0;
 }
