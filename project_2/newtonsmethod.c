@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include "array_gen.h"
 
-#define ARRAY_SIZE 160000
+#define ARRAY_SIZE 15000000
 
+//COMPUTATION
 float nMethod(float guess, float target) {
 	float func = guess*guess - target;
 	float funcPrime = 2*guess;
@@ -21,10 +23,12 @@ float nMethod(float guess, float target) {
 
 int main(int argc, char** argv) {
 	
-	float a[ARRAY_SIZE];
+	float* a = (float*)malloc(sizeof(float) * ARRAY_SIZE);
+	float* g = (float*)malloc(sizeof(float) * ARRAY_SIZE);
+	float* result = (float*)malloc(sizeof(float) * ARRAY_SIZE);
+
+
 	srand(time(NULL));
-	float g[ARRAY_SIZE];
-	float result[ARRAY_SIZE];
 
 	float max = 5;
 
@@ -41,15 +45,19 @@ int main(int argc, char** argv) {
 	clock_t end = clock();
 	float timeTaken = (float)((end-begin)/(float)CLOCKS_PER_SEC);
 
-	for(i = 0; i < ARRAY_SIZE; ++i) {
-		printf("%f, ", result[i]);
-		if (i % 10 == 0 && i != 0){
-			printf("\n");
-		}
-	}
+	// for(i = 0; i < ARRAY_SIZE; ++i) {
+	// 	printf("%f, ", result[i]);
+	// 	if (i % 10 == 0 && i != 0){
+	// 		printf("\n");
+	// 	}
+	// }
 
-	printf("\n");
+	// printf("\n");
 
 	printf("time taken: %f\n", timeTaken);
+
+	free(a);
+	free(g);
+	free(result);
 
 }
