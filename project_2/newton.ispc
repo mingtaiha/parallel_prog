@@ -56,7 +56,7 @@ void threaded_newton(uniform float size, uniform float threads, uniform float ar
     	if(i == threads-1){
     		threadEnd = size;
     	}
-    	for(j = 0; j < size; j++){
+    	for(j = threadStart; j < threadEnd; j++){
 			float x = arr[j];
 			float xprev = 0;
 			while (abs(x - xprev) > TOLERANCE) {
