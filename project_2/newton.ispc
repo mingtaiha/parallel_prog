@@ -8,7 +8,7 @@ task void threaded_newton_task(uniform float size, uniform float threads, unifor
 	if(taskIndex == taskCount-1){
 		end = size;
 	}
-    foreach (i = start ... threads) {
+    foreach (i = 0 ... threads) {
     	int threadSpan = span / threads;
     	int threadStart = i*threadSpan;
     	int threadEnd = (i+1)*threadSpan;
