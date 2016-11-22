@@ -1,0 +1,20 @@
+AVX Intrinsics
+	These are functions that the compiler replaces with the proper assembly instructions. For our implementation we used Newton’s method. We created an array of a __m256 type and made it the length of 1,875,000 since the _mm256_set_ps() function allowed us to create an array of size eight, and 8*1,875,000 = 15,000,000. This was the desired size of the number of elements that we wanted to take the square root. In our code we iterated through each of the 1,875,000 indexes of our array and performed Newton’s method for the set of _mm256 elements (8 elements at a time) in parallel. 
+
+Parallel Compilation
+Compile: gcc –mavx –o nmp newtonsmethodp.c
+Run: ./nmp <Number of elements / 8>
+
+Sequential Compilation:
+Compile: gcc –o nm newtonsmethod.c
+Run: ./nm <Number of elements>
+
+Time for newtonsmethodp.c (Parallel)
+15m: 0.481908s
+30m: 0.966046s
+
+Time for newtonsmethod.c (Sequential)
+15m: 0.686316s
+30m: 1.369438s
+
+	As the above run times indicate, There is a significant speedup when implementing the algorithm by using AVX intrinsics rather than performing the algorithm sequentially. AVX's ability to execute faster is due to the fact that on every iteration of the algorithm, 8 elements are being computed at the same time rather than just 1 element. The reason that there is not a speedup of 8 for the AVX execution could come from the overhead of producing additional storage during execution that the sequential algorithm did not need and an imperfection of implementing the algorithm with AVX. In particular, this implementation will continue to run on every _m256 array until every element that was passed in to the algorithm has reached the tolerance threshold. This means that for every array, even if every element within the array has reached the tolerance threshold, if there is even 1 element outside the array that has not reached the threshold, then the algorithm will still be ran across this array too.
