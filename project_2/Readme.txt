@@ -265,6 +265,83 @@ Reading Array
 Time taken: 0.304093
 
 
+New program version:
+Reading Array
+Cores: 1, Threads: 1, Time taken: 2.921518, Speedup: 1.000000
+Cores: 1, Threads: 2, Time taken: 1.550144, Speedup: 1.884675
+Cores: 1, Threads: 3, Time taken: 1.050666, Speedup: 2.780634
+Cores: 1, Threads: 4, Time taken: 0.792861, Speedup: 3.684780
+Cores: 1, Threads: 5, Time taken: 0.647700, Speedup: 4.510604
+Cores: 1, Threads: 6, Time taken: 0.548074, Speedup: 5.330517
+Cores: 1, Threads: 7, Time taken: 0.482241, Speedup: 6.058212
+Cores: 1, Threads: 8, Time taken: 0.424536, Speedup: 6.881673
+Cores: 1, Threads: All, Time taken: 0.209601, Speedup: 13.938474
+Cores: 2, Threads: 1, Time taken: 2.913749, Speedup: 1.002666
+Cores: 2, Threads: 2, Time taken: 2.005035, Speedup: 1.457091
+Cores: 2, Threads: 3, Time taken: 1.678578, Speedup: 1.740472
+Cores: 2, Threads: 4, Time taken: 1.506773, Speedup: 1.938924
+Cores: 2, Threads: 5, Time taken: 1.413632, Speedup: 2.066675
+Cores: 2, Threads: 6, Time taken: 1.351391, Speedup: 2.161860
+Cores: 2, Threads: 7, Time taken: 1.306005, Speedup: 2.236988
+Cores: 2, Threads: 8, Time taken: 1.269361, Speedup: 2.301566
+Cores: 2, Threads: All, Time taken: 0.211273, Speedup: 13.828165
+Cores: 3, Threads: 1, Time taken: 2.912355, Speedup: 1.003146
+Cores: 3, Threads: 2, Time taken: 1.888580, Speedup: 1.546939
+Cores: 3, Threads: 3, Time taken: 1.521937, Speedup: 1.919605
+Cores: 3, Threads: 4, Time taken: 1.374497, Speedup: 2.125518
+Cores: 3, Threads: 5, Time taken: 1.224478, Speedup: 2.385929
+Cores: 3, Threads: 6, Time taken: 1.151742, Speedup: 2.536608
+Cores: 3, Threads: 7, Time taken: 1.098240, Speedup: 2.660182
+Cores: 3, Threads: 8, Time taken: 1.055423, Speedup: 2.768102
+Cores: 3, Threads: All, Time taken: 0.211348, Speedup: 13.823258
+Cores: 4, Threads: 1, Time taken: 3.049094, Speedup: 0.958159
+Cores: 4, Threads: 2, Time taken: 1.886204, Speedup: 1.548888
+Cores: 4, Threads: 3, Time taken: 1.472317, Speedup: 1.984300
+Cores: 4, Threads: 4, Time taken: 1.258400, Speedup: 2.321613
+Cores: 4, Threads: 5, Time taken: 1.142724, Speedup: 2.556626
+Cores: 4, Threads: 6, Time taken: 1.063337, Speedup: 2.747500
+Cores: 4, Threads: 7, Time taken: 1.000344, Speedup: 2.920513
+Cores: 4, Threads: 8, Time taken: 0.928647, Speedup: 3.145994
+Cores: 4, Threads: All, Time taken: 0.254385, Speedup: 11.484632
+Cores: 5, Threads: 1, Time taken: 3.028494, Speedup: 0.964677
+Cores: 5, Threads: 2, Time taken: 1.830934, Speedup: 1.595644
+Cores: 5, Threads: 3, Time taken: 1.402101, Speedup: 2.083672
+Cores: 5, Threads: 4, Time taken: 1.181500, Speedup: 2.472719
+Cores: 5, Threads: 5, Time taken: 1.058708, Speedup: 2.759513
+Cores: 5, Threads: 6, Time taken: 1.004448, Speedup: 2.908581
+Cores: 5, Threads: 7, Time taken: 0.914433, Speedup: 3.194896
+Cores: 5, Threads: 8, Time taken: 0.895135, Speedup: 3.263774
+Cores: 5, Threads: All, Time taken: 0.247308, Speedup: 11.813277
+Cores: 6, Threads: 1, Time taken: 3.124106, Speedup: 0.935153
+Cores: 6, Threads: 2, Time taken: 1.834114, Speedup: 1.592877
+Cores: 6, Threads: 3, Time taken: 1.402108, Speedup: 2.083661
+Cores: 6, Threads: 4, Time taken: 1.171838, Speedup: 2.493107
+Cores: 6, Threads: 5, Time taken: 1.035898, Speedup: 2.820276
+Cores: 6, Threads: 6, Time taken: 0.950035, Speedup: 3.075169
+Cores: 6, Threads: 7, Time taken: 0.885049, Speedup: 3.300968
+Cores: 6, Threads: 8, Time taken: 0.837378, Speedup: 3.488888
+Cores: 6, Threads: All, Time taken: 0.273541, Speedup: 10.680366
+Cores: 7, Threads: 1, Time taken: 3.171590, Speedup: 0.921152
+Cores: 7, Threads: 2, Time taken: 1.847947, Speedup: 1.580953
+Cores: 7, Threads: 3, Time taken: 1.380342, Speedup: 2.116518
+Cores: 7, Threads: 4, Time taken: 1.142866, Speedup: 2.556308
+Cores: 7, Threads: 5, Time taken: 1.003540, Speedup: 2.911212
+Cores: 7, Threads: 6, Time taken: 0.920641, Speedup: 3.173352
+Cores: 7, Threads: 7, Time taken: 0.852287, Speedup: 3.427857
+Cores: 7, Threads: 8, Time taken: 0.803039, Speedup: 3.638077
+Cores: 7, Threads: All, Time taken: 0.294163, Speedup: 9.931630
+Cores: 8, Threads: 1, Time taken: 3.231933, Speedup: 0.903954
+Cores: 8, Threads: 2, Time taken: 1.854555, Speedup: 1.575320
+Cores: 8, Threads: 3, Time taken: 1.362931, Speedup: 2.143555
+Cores: 8, Threads: 4, Time taken: 1.116422, Speedup: 2.616858
+Cores: 8, Threads: 5, Time taken: 0.978697, Speedup: 2.985110
+Cores: 8, Threads: 6, Time taken: 0.901839, Speedup: 3.239512
+Cores: 8, Threads: 7, Time taken: 0.817670, Speedup: 3.572979
+Cores: 8, Threads: 8, Time taken: 0.767849, Speedup: 3.804808
+Cores: 8, Threads: All, Time taken: 0.308580, Speedup: 9.467619
+
+Image saved to: 
+ INFO node1-1.sb1.orbit-lab.org:   to the file 'Group3-node-node1-1.sb1.orbit-lab.org-2016-11-21-22-24-08.ndz' on host '10.11.0.42'
 
 
 
