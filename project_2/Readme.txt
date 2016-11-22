@@ -8,14 +8,18 @@ To generate matrices,
 To compile the ISPC part of it:
 
 1a) Compile with sse4-i32x8 instructions
-    ispc newton.ispc -h newton_ispc.h -o newton_ispc_sse4.o --target=sse4-i32x8
+    ispc newton.ispc -h newton.h -o newton_ispc_sse4.o --target=sse4-i32x8
 1b) Compile with avx2-i32x8 instructions
-    ispc newton.ispc -h newton_ispc.h -o newton_ispc_avx2.o --target=avx2-i32x8
+    ispc newton.ispc -h newton.h -o newton_ispc_avx2.o --target=avx2-i32x8
 
-root@node1-11:~# g++ -Wall -Werror sqrt_ispc.c newton_ispc.o tasksys.o -o sqrt_ispc -lpthread
+2) Compile tasksys.cpp which comes along with ispc. A copy is included here
+    g++ -c tasksys.cpp -o tasksys.o
 
-To run:
-./sqrt_ispc [Number_of_cores] [Number_of_threads]
+3) Compile ispc code with regular code
+    g++ -Wall -Werror sqrt_ispc.c newton_ispc.o tasksys.o -o sqrt_ispc -lpthread
+
+4) run, this will loop over all different number of threads and cores:
+    ./sqrt_ispc <array_filename> <number of elements>
 
 for example: 
 
