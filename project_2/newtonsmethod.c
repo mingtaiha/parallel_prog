@@ -3,7 +3,7 @@
 #include <time.h>
 #include "array_gen.h"
 
-#define ARRAY_SIZE 15000000
+//#define ARRAY_SIZE 15000000
 
 //COMPUTATION
 float nMethod(float guess, float target) {
@@ -22,7 +22,8 @@ float nMethod(float guess, float target) {
 }
 
 int main(int argc, char** argv) {
-	
+
+	int ARRAY_SIZE = atoi(argv[1]);
 	float* a = (float*)malloc(sizeof(float) * ARRAY_SIZE);
 	float* g = (float*)malloc(sizeof(float) * ARRAY_SIZE);
 	float* result = (float*)malloc(sizeof(float) * ARRAY_SIZE);

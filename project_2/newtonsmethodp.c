@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ARRAY_SIZE 1875000 //number of 8 element arrays
+//#define ARRAY_SIZE 1875000 //number of 8 element arrays
 
 //compile using -mavx
 
@@ -45,7 +45,7 @@ __m256 nmParallel(__m256 guess, __m256 target) {
 int main(int argc, char* argv[]) {
 	//printf("size %i\n", sizeof(__m256) * ARRAY_SIZE);
 
-	//int numThreads = atoi(argv[1]);
+	int ARRAY_SIZE = atoi(argv[1]);
 	void* t; //= (float*)aligned_alloc(32, (sizeof(__m256)) * ARRAY_SIZE);
 	void* g;// = (float*)aligned_alloc(32, (sizeof(__m256)) * ARRAY_SIZE);
 	void* r;// = (float*)aligned_alloc(32, (sizeof(__m256)) * ARRAY_SIZE);
