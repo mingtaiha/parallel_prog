@@ -16,7 +16,7 @@ task void threaded_newton_task(uniform float size, uniform float threads, unifor
     	if(i == threads-1){
     		threadEnd = end;
     	}
-    	for(j = start; j < end; j++){
+    	for(j = threadStart; j < threadEnd; j++){
 			float x = arr[j];
 			float xprev = 0;
 			while (abs(x - xprev) > TOLERANCE) {
