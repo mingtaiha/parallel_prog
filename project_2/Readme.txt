@@ -1,6 +1,16 @@
+To generate matrices, 
+1) compile
+    gcc array_gen.c -o array_gen.o -lm
+2) run
+    ./array_gen.o <array_filename> <sqrt_array_filename> <num_elements>
+
+
 To compile the ISPC part of it:
 
-ispc newton.ispc -h newton_ispc.h -o newton_ispc.o
+1a) Compile with sse4-i32x8 instructions
+    ispc newton.ispc -h newton_ispc.h -o newton_ispc_sse4.o --target=sse4-i32x8
+1b) Compile with avx2-i32x8 instructions
+    ispc newton.ispc -h newton_ispc.h -o newton_ispc_avx2.o --target=avx2-i32x8
 
 root@node1-11:~# g++ -Wall -Werror sqrt_ispc.c newton_ispc.o tasksys.o -o sqrt_ispc -lpthread
 
