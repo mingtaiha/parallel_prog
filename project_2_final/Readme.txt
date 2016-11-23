@@ -41,6 +41,16 @@ The AVX intrinsics ONLY part:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
+The performance of the code was tested on sb1.orbit-lab.org
+The output timings are given in seconds
+
+The output files are:
+    output_avx_only	// AVX Intrinsics only
+    output_ispc_sse_15m	// ISPC compiled with SSE instructions, 15 million elements
+    output_ispc_sse_30m	// ISPC compiled with SSE instructions, 30 million elements
+    output_ispc_avx_15m	// ISPC compiled with AVX instructions, 15 million elements
+    output_ispc_avx_30m	// ISPC compiled with AVX instructions, 30 million elements
+
 
 ISPC SAMPLE OUTPUT
 
@@ -121,5 +131,11 @@ Cores: 8, Threads: All, Time taken: 0.308580, Speedup: 9.467619
 
 AVX INTRINSICS ONLY SAMPLE OUTPUT
 
+Sequential
+Time taken: 0.691788
+Time taken: 1.382810
 
+Parallel
+Time Taken = 0.478799
+Time Taken = 0.971262
 
