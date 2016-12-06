@@ -128,6 +128,8 @@ vertex** checkGraph(vertex** g, int size) { //for simplicity, change every value
 }
 
 void printGraph(vertex** graph, int size) {
+
+	printf("\nGraph Values\n\n");
 	int i = 0;
 	for(;i < size; ++i) {
 		int j = 0;
@@ -140,6 +142,21 @@ void printGraph(vertex** graph, int size) {
 				}
 			} else {
 				printf("   ");
+			}
+		}
+		printf("\n");
+	}
+
+	printf("\n");
+
+	printf("Visited Flag Values\n\n");
+	for(i = 0;i < size; ++i) {
+		int j = 0;
+		for(;j < size; ++j) {
+			if (graph[i][j].val != -1) {
+				printf("%d ", graph[i][j].vflag);
+			} else {
+				printf("  ");
 			}
 		}
 		printf("\n");

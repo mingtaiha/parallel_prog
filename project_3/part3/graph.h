@@ -6,7 +6,7 @@ typedef struct vertex {
 	int vflag;
 } vertex;
 
-//vertex** checkGraph(vertex** graph, int size);
+vertex** checkGraph(vertex** graph, int size);
 void printGraph(vertex** graph, int size);
 
 #endif
