@@ -1,13 +1,6 @@
-/* NEED TO ASK THESE QUESTIONS IN CLASS
-
-1) are the values of each vertex unique within the graph?
-2) are all vertecies expected to be connected with at least 1 other vertex?
-
-right now this generates an array of size n (n is script input) and generates
-random numbers between -1 and 99. there is no check for value uniqueness or vertex connection
-*/
-
-
+//Written Bu: Cedric Blake
+//this script creates a 2-d graph of vertecies valued between 0 and 99
+//this graph is implemented using a 2-d array
 
 //n x n array where n > 100, -1 denotes no value (disconnect) of graph
 //every value around a value is concidered to be connected to that value
@@ -18,6 +11,89 @@ random numbers between -1 and 99. there is no check for value uniqueness or vert
 
 #include "linklist.h"
 #include "queue.h"
+
+
+//garuntees that every vertex is connected to at least 1 other vertex
+//returns the corrected graph
+int** checkGraph(int** g, int size) { //for simplicity, change every value around isolated value to (not -1)
+	int** graph;
+	graph = g;
+	int i = 0;
+	for(;i < size; ++i) {
+		int j = 0;
+		for(;j < size; ++j) {
+			if(i == 0) { //top row
+				if (j == 0) { //top left corner
+					if (graph[i+1][j] == -1 && graph[i][j+1] == -1 && graph[i+1][j+1] == -1) {
+						graph[i+1][j] = rand() % 100; //this is 100 (from 0 to 99)
+						graph[i][j+1] = rand() % 100; //this is 100 (from 0 to 99)
+						graph[i+1][j+1] = rand() % 100; //this is 100 (from 0 to 99)
+					}
+				} else if (j == size) { //top right corner
+					if (graph[i+1][j] == -1 && graph[i][j-1] == -1 && graph[i+1][j-1] == -1) {
+						graph[i+1][j] = rand() % 100; 
+						graph[i][j-1] = rand() % 100; 
+						graph[i+1][j-1] = rand() % 100; 
+					}
+				} else { //just on top row
+					if (graph[i][j-1] == -1 && graph[i][j+1] == -1 &&
+						graph[i+1][j-1] == -1 && graph[i+1][j] == -1 && graph[i+1][j+1] == -1) {
+
+						graph[i][j-1] = rand() % 100; 
+						graph[i][j+1] = rand() % 100; 
+						graph[i+1][j-1] = rand() % 100;
+						graph[i+1][j] = rand() % 100; 
+						graph[i+1][j+1] = rand() % 100; 
+
+					}
+				}
+			} else if (i == size) {
+				if (j == 0) { //bot left corner
+					if (graph[i-1][j] == -1 && graph[i][j+1] == -1 && graph[i-1][j+1] == -1) {
+						graph[i-1][j] = rand() % 100; //this is 100 (from 0 to 99)
+						graph[i][j+1] = rand() % 100; //this is 100 (from 0 to 99)
+						graph[i-1][j+1] = rand() % 100; //this is 100 (from 0 to 99)
+					}
+				} else if (j == size) { //bot right corner
+					if (graph[i-1][j] == -1 && graph[i][j-1] == -1 && graph[i-1][j-1] == -1) {
+						graph[i-1][j] = rand() % 100; 
+						graph[i][j-1] = rand() % 100; 
+						graph[i-1][j-1] = rand() % 100; 
+					}
+				} else { //just on bot row
+					if (graph[i][j-1] == -1 && graph[i][j+1] == -1 &&
+						graph[i-1][j-1] == -1 && graph[i-1][j] == -1 && graph[i-1][j+1] == -1) {
+
+						graph[i][j-1] = rand() % 100; 
+						graph[i][j+1] = rand() % 100; 
+						graph[i-1][j-1] = rand() % 100;
+						graph[i-1][j] = rand() % 100; 
+						graph[i-1][j+1] = rand() % 100; 
+
+					}
+				}
+			} else {
+				if (graph[i-1][j-1] == -1 && graph[i-1][j] == -1 && graph[i-1][j+1] == -1 &&
+					graph[i][j-1] == -1 && graph[i][j+1] == -1 &&
+					graph[i+1][j-1] == -1 && graph[i+1][j] == -1 && graph[i+1][j+1] == -1) {
+
+					graph[i-1][j-1] = rand() % 100;
+					graph[i-1][j] = rand() % 100;
+					graph[i-1][j+1] = rand() % 100;
+
+					graph[i][j-1] = rand() % 100;
+					graph[i][j+1] = rand() % 100;
+
+					graph[i+1][j-1] = rand() % 100;
+					graph[i+1][j] = rand() % 100;
+					graph[i+1][j+1] = rand() % 100;
+				}
+			}
+		}
+	}
+
+	return graph;
+}
 
 void printGraph(int** graph, int size) {
 	int i = 0;
@@ -35,6 +111,8 @@ void printGraph(int** graph, int size) {
 int main(int argc, char* const argv[]) {
 	int n = atoi(argv[1]); //dimensions of generated array
 	int* graph[n];
+
+	int** graphTwo; //stores result of checkGraph func
 
 	srand(time(NULL));
 
@@ -54,7 +132,9 @@ int main(int argc, char* const argv[]) {
 		graph[i] = a;
 	}
 
-	printGraph(graph, n);
+	graphTwo = checkGraph(graph, n);
+
+	printGraph(graphTwo, n);
 
 	for(i = 0; i < n; ++i) {
 		free(graph[i]);
