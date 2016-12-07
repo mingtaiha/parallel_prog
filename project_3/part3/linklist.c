@@ -40,6 +40,9 @@ void linklistTraverse(Node* head){
 
 	do { //do/while takes into account case when only 1 element exists
 		printf("%d, ", iter->val);
+		if (iter->coord != NULL) {
+			printf("@ [%d,%d], ", *iter->coord, *(iter->coord + 1));
+		}
 		iter = iter->next;
 	} while(iter != NULL);
 	printf("\n");
@@ -53,6 +56,7 @@ void linklistDestroy(Node* head) {
 	}
 
 	do {
+		free(iter->coord);
 		free(iter);
 		iter = iter->next;
 	} while(iter != NULL);

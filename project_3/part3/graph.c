@@ -1,4 +1,4 @@
-//Written Bu: Cedric Blake
+//Written By: Cedric Blake
 //this script creates a 2-d graph of vertecies valued between 0 and 99
 //this graph is implemented using a 2-d array
 
@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "linklist.h"
-#include "queue.h"
 #include "graph.h"
 
 
@@ -149,41 +147,30 @@ void printGraph(vertex** graph, int size) {
 
 	printf("\n");
 
-	printf("Visited Flag Values\n\n");
-	for(i = 0;i < size; ++i) {
-		int j = 0;
-		for(;j < size; ++j) {
-			if (graph[i][j].val != -1) {
-				printf("%d ", graph[i][j].vflag);
-			} else {
-				printf("  ");
-			}
-		}
-		printf("\n");
-	}
+	// printf("Visited Flag Values\n\n");
+	// for(i = 0;i < size; ++i) {
+	// 	int j = 0;
+	// 	for(;j < size; ++j) {
+	// 		if (graph[i][j].val != -1) {
+	// 			printf("%d ", graph[i][j].vflag);
+	// 		} else {
+	// 			printf("  ");
+	// 		}
+	// 	}
+	// 	printf("\n");
+	// }
 }
 
-//for testing, keep to 10 by 10 grid
-
-int main(int argc, char* const argv[]) {
-	int n;
-	if(argv[1]) {
-		n = atoi(argv[1]); //dimensions of generated array
-	} else {
-		printf("no input!\n");
-		return 0;
-	}
-	vertex* graph[n];
-
-	vertex** graphTwo; //stores result of checkGraph func
-
+//generates random graph
+void genGraph(vertex*** graph, int size) {
+	*graph = malloc(sizeof(vertex*) * size);
 	srand(time(NULL));
 
 	int i = 0;
-	for(; i < n; ++i) {
-		vertex* a = malloc(sizeof(vertex) * n);
+	for(; i < size; ++i) {
+		vertex* a = malloc(sizeof(vertex) * size);
 		int j = 0;
-		for(; j < n; ++j) {
+		for(; j < size; ++j) {
 			int rando = rand() % 150; //this is 150 values (from 0 to 149),
 			if (rando < 100) { //gives -1 more chance to appear
 				a[j].val = rando; 
@@ -193,17 +180,39 @@ int main(int argc, char* const argv[]) {
 			a[j].vflag = 0;
 		}
 
-		graph[i] = a;
+		(*graph)[i] = a;
 	}
 
-	graphTwo = checkGraph(graph, n);
+	*graph = checkGraph(*graph, size);
+}
 
-	printGraph(graphTwo, n);
-
-	for(i = 0; i < n; ++i) {
+void destroyGraph(vertex** graph, int size) {
+	int i = 0;
+	for(; i < size; ++i) {
 		free(graph[i]);
 	}
 
-	return 0;
-
+	free(graph);
+	printf("graph destroyed!\n");
 }
+
+// //for testing, keep to 10 by 10 grid
+
+// int main(int argc, char* const argv[]) {
+// 	int n;
+// 	if(argv[1]) {
+// 		n = atoi(argv[1]); //dimensions of generated array
+// 	} else {
+// 		printf("no input!\n");
+// 		return 0;
+// 	}
+// 	vertex** g;
+// 	genGraph(&g, n);
+
+// 	printGraph(g, n);
+
+// 	destroyGraph(g, n);
+
+// 	return 0;
+
+// }

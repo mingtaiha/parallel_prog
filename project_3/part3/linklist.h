@@ -10,6 +10,7 @@
 
 typedef struct Node {
 	int val;
+	int* coord; //used to find value on graph array
 	struct Node* next;
 } Node;
 

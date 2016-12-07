@@ -8,7 +8,7 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-void queuePush(Node** head, int pushVal);
-int queuePop(Node** head);
+void queuePush(Node** head, int pushVal, int* pushCoord);
+Node queuePop(Node** head);
 
 #endif

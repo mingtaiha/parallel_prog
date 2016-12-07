@@ -8,5 +8,7 @@ typedef struct vertex {
 
 vertex** checkGraph(vertex** graph, int size);
 void printGraph(vertex** graph, int size);
+void genGraph(vertex*** graph, int size);
+void destroyGraph(vertex** graph, int size);
 
 #endif

@@ -11,35 +11,47 @@
 //push to the queue
 //Note, needed to make a double pointer so we could reference the head of the linklist
 //this is to be able to change the pointers value to "pushNode" within the function
-void queuePush(Node** headPointer, int pushVal) {
+void queuePush(Node** headPointer, int pushVal, int* pushCoord) { //set pushCoord to NULL if you dont care about coord value
 	Node* pushNode = malloc(sizeof(Node));
 	pushNode->val = pushVal;
-	pushNode->next = *headPointer;
+	pushNode->coord = pushCoord;
+	if(*headPointer == NULL) { //if there is nothing in the queue initially
+		pushNode->next = NULL;
+	} else {
+		pushNode->next = *headPointer;
+	}
 	*headPointer = pushNode;
 	return;
 }
 
 //pop from the queue
-int queuePop(Node** headPointer) {
+Node queuePop(Node** headPointer) {
 	Node* holder = *headPointer; //holds value to be referenced later
 
 	if (*headPointer == NULL) { //if the link list is empty
 		printf("Nothing to pop!\n");
-		return -1;
+		Node returnVal;
+		returnVal.val = -1;
+		returnVal.coord = NULL;
+		return returnVal;
 	} 
 
 	if ((*headPointer)->next == NULL) { //if there was only 1 element in the link list
-		int returnVal = (*headPointer)->val;
+		Node returnVal;
+		returnVal.val = (*headPointer)->val;
+		returnVal.coord = (*headPointer)->coord;
 		*headPointer = NULL;
 		free(holder);
 		return returnVal;
 	}
-
+	
 	Node* iter = (*headPointer)->next;
 	while(1) {
 		if (iter->next == NULL) {
 			(*headPointer)->next = NULL;
-			int returnVal = iter->val;
+			Node returnVal;
+			returnVal.val = iter->val;
+			returnVal.coord = iter->coord;
 			free(iter);
 			*headPointer = holder;
 			return returnVal;
@@ -49,26 +61,25 @@ int queuePop(Node** headPointer) {
 	}
 }
 
-/* //queue test
+//  //queue test
 
-int main(int argc, char const *argv[]) {
-	int arrayA[] = {7,4,8,6,2,3,2,1};
-	int* end = arrayA + sizeof(arrayA)/4;
-	Node* head = linklistCreate(arrayA, end);
+// int main(int argc, char const *argv[]) {
+// 	int arrayA[] = {7,4,8,6,2,3,2,1};
+// 	int* end = arrayA + sizeof(arrayA)/4;
+// 	Node* head = linklistCreate(arrayA, end);
 
-	linklistTraverse(head);
-	queuePush(&head, 3);
-	queuePush(&head, 6);
-	linklistTraverse(head);
+// 	linklistTraverse(head);
+// 	queuePush(&head, 3, NULL);
+// 	queuePush(&head, 6, NULL);
+// 	linklistTraverse(head);
 
-	while (head != NULL) {
-		queuePop(&head);
-		linklistTraverse(head);
-	}
+// 	while (head != NULL) {
+// 		queuePop(&head);
+// 		linklistTraverse(head);
+// 	}
 
 
-	linklistDestroy(head);
-	return 0;
-}
+// 	linklistDestroy(head);
+// 	return 0;
+// }
 
-*/
