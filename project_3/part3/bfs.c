@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "linklist.h"
 #include "queue.h"
@@ -166,7 +167,10 @@ int main(int argc, char** argv) {
  	int* buffIter = bfsBuffer;
 
  	//bfs stuff should go here
+ 	clock_t begin = clock();
  	bfsRecursion(&g, n, start, &qhead, &buffIter);
+ 	clock_t end = clock();
+ 	float timeTaken = (float)((end-begin)/(float)CLOCKS_PER_SEC);
 
 	printf("\n");
 	printf("Result");
@@ -192,6 +196,9 @@ int main(int argc, char** argv) {
  	linklistDestroy(qhead);
 
  	printf("\n");
+
+ 	printf("time taken: %f\n", timeTaken);
+ 	
 
 	return 0;
 }
