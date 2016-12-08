@@ -40,7 +40,7 @@ void pushNode(vertex*** graph, Node** qhead, int row, int col, int** storageArra
 
 //place bfsStart function in place of "start" parameter
 //NOTE: may need to pass by reference, not sure yet though
-int* bfsRecursion(vertex*** graph, int size, Node start, Node** qhead, int** storageArray) {
+static void bfsRecursion(vertex*** graph, int size, Node start, Node** qhead, int** storageArray) {
 
 	//queue used to store the value that you will move to next
 	//the value that we move to is the "coord" member variable in Node struct
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
  	printf("\n");
 
  	printf("time taken: %f\n", timeTaken);
- 	
+
 
 	return 0;
 }
