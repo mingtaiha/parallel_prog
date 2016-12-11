@@ -1,9 +1,8 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "matrix_gen.h"
+#include "problem2.h"
 
+#define TEST 0
 
-double ** mult_matrix(double ** A, double ** B, int ROW_A, int COL_A, int ROW_B, int COL_B) {
+double ** mult_matrix_seq(double ** A, double ** B, int ROW_A, int COL_A, int ROW_B, int COL_B) {
 
     if (COL_A != ROW_B) {
         printf("Can't multiply. Dimensions don't match\n");
@@ -28,6 +27,8 @@ double ** mult_matrix(double ** A, double ** B, int ROW_A, int COL_A, int ROW_B,
     printf("Done Multiplying\n");
 }
 
+#if TEST
+/*
 int main(int argc, char * argv[]) {
 
     char * filename1 = argv[1];
@@ -46,3 +47,5 @@ int main(int argc, char * argv[]) {
     mult_matrix(mat1, mat2, ROW1, COL1, ROW2, COL2);
     return 0;
 }
+*/
+#endif
