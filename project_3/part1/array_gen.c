@@ -1,11 +1,7 @@
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "array_gen.h"
 
 
-int SIZE;
-
-double * make_array() {
+double * make_array(int SIZE) {
 	double * array = (double *) malloc(SIZE * sizeof(double));
 	srand(time(NULL));
 
@@ -16,21 +12,21 @@ double * make_array() {
 	return array;
 }
 
-void print_array(double * array) {
+void print_array(double * array, int SIZE) {
 	int i;
 	for (i = (SIZE - 25); i < SIZE; i++) {
 		printf("%f\n", array[i]);
 	}
 }
 
-void write_array(double * array, char * filename) {
+void write_array(double * array, char * filename, int SIZE) {
 	FILE *f = fopen(filename, "wb");
 	printf("Writing Array\n");
 	fwrite(array, sizeof(double), SIZE, f);
 	fclose(f);
 }
 
-double * read_array(char * filename) {
+double * read_array(char * filename, int SIZE) {
 	double * array = (double *) malloc(SIZE * sizeof(double));
 	FILE *f = fopen(filename, "rb");
 	if (f == NULL) {
@@ -40,18 +36,4 @@ double * read_array(char * filename) {
 	printf("Reading Array\n");
 	fread(array, sizeof(double), SIZE, f);
 	return array;
-}
-
-
-int main(int argc, char * argv[]) {
-
-	char * arr_name = argv[1];
-	SIZE = atoi(argv[2]);
-	double * arr = make_array();
-	print_array(arr);
-	write_array(arr, arr_name);
-	double * arr2 = read_array(arr_name);
-	print_array(arr2);
-
-	return 0;
 }

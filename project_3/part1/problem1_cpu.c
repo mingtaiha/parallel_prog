@@ -1,10 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
-#include "array_gen.h"
+#include "problem1.h"
 
+#define TEST 0
 
-double max_array(double * arr, int SIZE) {
+double max_array_seq(double * arr, int SIZE) {
 
     int i;
     double max = arr[0];
@@ -16,7 +15,7 @@ double max_array(double * arr, int SIZE) {
     return max;
 }
 
-double min_array(double * arr, int SIZE) {
+double min_array_seq(double * arr, int SIZE) {
     
     int i;
     double min = arr[0];
@@ -28,7 +27,7 @@ double min_array(double * arr, int SIZE) {
     return min;
 }
 
-double avg_array(double * arr, int SIZE) {
+double avg_array_seq(double * arr, int SIZE) {
 
     int i;
     double sum = 0;
@@ -39,11 +38,11 @@ double avg_array(double * arr, int SIZE) {
     return avg;
 }
 
-double std_array(double * arr, int SIZE) {
+double std_array_seq(double * arr, int SIZE) {
 
     int i;
     double sum = 0;
-    double avg = avg_array(arr, SIZE);
+    double avg = avg_array_seq(arr, SIZE);
 
     for (i = 0; i < SIZE; i++) {
         sum += (arr[i] - avg) * (arr[i] - avg);
@@ -52,8 +51,9 @@ double std_array(double * arr, int SIZE) {
     return std;
 }
 
+#if TEST
 
-
+/*
 int main(int argc, char * argv[]) {
 
     char * filename = argv[1];
@@ -71,3 +71,5 @@ int main(int argc, char * argv[]) {
 
     return 0;
 }
+*/
+#endif
