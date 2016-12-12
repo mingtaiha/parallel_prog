@@ -9,17 +9,18 @@
 #include "graph.h"
 
 //chooses a starting point for bredth first search
-Node bfsStart(vertex** graph, int size) {
+Node bfsStart(vertex*** graph, int size) {
 	int i = 0;
 	for(;i < size; ++i) {
 		int j = 0;
 		for(;j < size; ++j) {
-			if(graph[i][j].val != -1) {
+			if((*graph)[i][j].val != -1) {
 				Node start;
 				int* holder = malloc(sizeof(*holder) * 2);
 				*holder = i;
 				*(holder+1) = j;
-				start.val = graph[i][j].val;
+				start.val = (*graph)[i][j].val;
+				(*graph)[i][j].vflag = 1;
 				start.coord = holder;
 				start.next = NULL;
 				return start;
@@ -153,10 +154,8 @@ int main(int argc, char** argv) {
 	//create graph
 	vertex** g;
  	genGraph(&g, n);
- 	printGraph(g, n);
-
  	//create start
-	Node start = bfsStart(g, n);
+	Node start = bfsStart(&g, n);
 	printf("start at %d, %d\n", *start.coord, *(start.coord+1));
 
  	int* bfsBuffer = malloc(sizeof(*bfsBuffer) * (n*n));
@@ -188,6 +187,9 @@ int main(int argc, char** argv) {
  		}
  	}
  	printf("\n");
+
+ 	printGraph(g, n);
+
 
  	//deallocate graph
  	destroyGraph(g, n);

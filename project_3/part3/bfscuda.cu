@@ -1,28 +1,25 @@
-//bredth first search with itterative implementation
-
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "linklist.h"
 #include "queue.h"
 #include "graph.h"
 
-//chooses a starting point for bredth first search
+
+__global__ //altered to account for threads
 Node bfsStart(vertex*** graph, int size) {
 	int i = 0;
 	for(;i < size; ++i) {
 		int j = 0;
 		for(;j < size; ++j) {
-			if((*graph)[i][j].val != -1) {
+			__synchthreads();
+			if((*graph)[i][j].val != -1 && (*graph)[i][j].vflag == 0) { //thread has already occupied this start value
+				atomicAdd((*graph)[i][j].vflag, 1); //atomic add removes race condition
 				Node start;
 				int* holder = malloc(sizeof(*holder) * 2);
 				*holder = i;
 				*(holder+1) = j;
 				start.val = (*graph)[i][j].val;
-				(*graph)[i][j].vflag = 1;
 				start.coord = holder;
 				start.next = NULL;
 				return start;
@@ -31,18 +28,19 @@ Node bfsStart(vertex*** graph, int size) {
 	}
 }
 
+__global__
 void pushNode(vertex*** graph, Node** qhead, int row, int col, int** storageArray) {
 	int val = (*graph)[row][col].val;
-	**storageArray = (*graph)[row][col].val;
-	*storageArray = *storageArray + 1;
+	atomicAdd(**storageArray, (*graph)[row][col].val); //place val into storage array atomically
+	atomicAdd(*storageArray, 1);
 	int* holder = malloc(sizeof(*holder) * 2);
 	*holder = row;
 	*(holder+1) = col;
 	queuePush(qhead, val, holder);
 }
 
-//place bfsStart function in place of "start" parameter
-//NOTE: may need to pass by reference, not sure yet though
+//to be ran on each individual thread
+__global__
 void bfsIteration(vertex*** graph, int size, Node currNode, Node** qhead, int** storageArray) {
 
 	//queue used to store the value that you will move to next
@@ -129,6 +127,17 @@ void bfsIteration(vertex*** graph, int size, Node currNode, Node** qhead, int** 
 			}
 		}
 
+		//once each thread has marked surrounding nodes, then they select which node to go to next
+		__synchthreads();
+
+
+		//ACTUALLY, dont think this is a problen, if a thread flags a node, then the
+		//thread that comes after it will see that it has already been flagged.
+		//becaue the flag only needs to be set once, synchronization isnt really a problem as
+		//far as the graph is concerned. just need to synch when storing found value into storage array
+		//TODO: will need to have another check because a thread that has finished its check
+		//does not see that its adjacent nodes have been
+
 		//base case
 		//base case check
 		if(!deadEndFlag) { //need to do recursion
@@ -144,68 +153,80 @@ void bfsIteration(vertex*** graph, int size, Node currNode, Node** qhead, int** 
 	}
 }
 
-int main(int argc, char** argv) {
-	int n;
-	if(argv[1]) {
-		n = atoi(argv[1]); //dimensions of generated array
-	} else {
-		printf("no input!\n");
+__global__
+void bfsCuda(vertex*** graph, vertex*** splitGraph, int size, Node** qheadbuff, int** storageArray) {
+	int tIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	//each thread should have there own start place and queue
+	//create queue
+
+	sgSize = size/gridDim.x;
+
+	__shared__ vertex** sGraph = splitGraph;
+
+	//split graph for each block
+	int i = 0;
+	for(;i < sgSize; ++i) {
+		sGraph[i] = graph[i + blockIdx.x];
+	}
+
+	//initialize queue for each thread
+	qheadbuff[tIndex] = bfsStart(sGraph, sgSize);
+
+	__synchthreads();
+
+	//graph should be divided based on block indexing
+	bfsIteration(splitGraph, sgSize, start, qheadBuff[tIndex], storageArray);
+}
+
+int main(int argc, char* argv[]) {
+	int graphSize = atoi(argv[1]);
+	int numBlocks = atoi(argv[2]);
+	int tPerBlock = atoi(argv[3]);
+
+	if(graphSize < 1 || numBlocks < 1 || numThreads < 1) {
+		printf("invalid input!\n");
 		return 0;
 	}
 
-	//create queue
-	Node* qhead = NULL; //initialize to null for queuePush func
-
-	//create graph
 	vertex** g;
- 	genGraph(&g, n);
- 	//create start
-	Node start = bfsStart(&g, n);
-	printf("start at %d, %d\n", *start.coord, *(start.coord+1));
+ 	genGraph(&g, graphSize);
 
- 	int* bfsBuffer = malloc(sizeof(*bfsBuffer) * (n*n));
- 	int i = 0;
- 	for (; i < n*n; ++i) { //just for displaying result clearly
- 		bfsBuffer[i] = -1;
- 	}
- 	int* buffIter = bfsBuffer;
+	vertex** d_graph;
+	vertex** d_sGraph; //split the graph for each block
+	int* valStorage; //store the result here (every thread does this)
+	node** qheadHolder = sizeof(*Node)*(tPerBlock*numBlocks);
+	node** d_qheadHolder; //stores each queue for all the threads
 
- 	//bfs stuff should go here
- 	clock_t begin = clock();
- 	bfsIteration(&g, n, start, &qhead, &buffIter);
- 	clock_t end = clock();
- 	float timeTaken = (float)((end-begin)/(float)CLOCKS_PER_SEC);
+	int i = 0;
+	for(;i < tPerBlock*numBlocks; ++i) {
+		Node* qhead = NULL;
+		qheadHolder[i] = qhead;
+	}
 
-	printf("\n");
-	printf("Result");
-	printf("\n");
+	cudaMalloc(d_graph, sizeof(g));
+	cudaMalloc(d_sGraph, sizeof(graph)/numBlocks); //will be populated in function
+	cudaMalloc(valStorage, sizeof(*valStorage) * (graphSize*graphSize));
+	cudaMalloc(d_qheadHolder, sizeof(*Node)*(tPerBlock*numBlocks));
+	cudaMemcpy(d_graph, g, sizeof(g), cudaMemcpyHostToDevice); //move graph to device
+	cudaMemcpy(d_qheadHolder, qheadHolder, sizeof(qheadHolder), cudaMemcpyHostToDevice); //move all heads to device
 
- 	i = 0;
- 	for(; i < n*n; ++i) {
- 		if (bfsBuffer[i] == -1) {
- 			break;
- 		}
- 		if (i % 10 != 9) {
- 			printf("%d, ", bfsBuffer[i]);
- 		} else {
- 			printf("%d\n", bfsBuffer[i]);
- 		}
- 	}
- 	printf("\n");
+	free(qheadHolder);
+	free(g);
 
- 	printGraph(g, n);
+	bfsCuda<<<numBlocks, numThreads>>>(&d_graph, &d_sGraph, graphSize, d_qheadHolder, &valStorage);
 
+	cudaFree(d_graph);
+	cudaFree(d_sGraph);
+	cudaFree(valStorage);
+	cudaFree(d_qheadHolder);
 
- 	//deallocate graph
- 	destroyGraph(g, n);
-
- 	//deallocate queue
- 	linklistDestroy(qhead);
-
- 	printf("\n");
-
- 	printf("time taken: %f\n", timeTaken);
- 	
 
 	return 0;
+
 }
+
+//nvm i think this is covered by the checkGraph function
+//TODO: need to divide the graph in the bfsCuda function such that each block is 
+//allocated an even portion of the graph. the checkGraph() function does NOT
+//hold if the graph is cut like this, so u want to add logic to account for this
