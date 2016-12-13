@@ -10,14 +10,14 @@
 
 
 // CPU implementations
-double max_array_seq(double *arr, int SIZE);
-double min_array_seq(double *arr, int SIZE);
-double avg_array_seq(double *arr, int SIZE);
-double std_array_seq(double *arr, int SIZE);
+double max_array_seq(double *arr, long int SIZE);
+double min_array_seq(double *arr, long int SIZE);
+double avg_array_seq(double *arr, long int SIZE);
+double std_array_seq(double *arr, long int SIZE);
 
 // GPU implementation
 
 void hello_gpu(char *a, int *b, const int N, const int blocksize);
-void max_gpu(double *array, int size, int tpb);
+void max_gpu(double *array, long int size, int tpb);
 
 #endif

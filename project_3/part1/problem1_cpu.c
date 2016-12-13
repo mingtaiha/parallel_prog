@@ -3,9 +3,9 @@
 
 #define TEST 0
 
-double max_array_seq(double * arr, int SIZE) {
+double max_array_seq(double * arr, long int SIZE) {
 
-    int i;
+    long int i;
     double max = arr[0];
     for (i = 1; i < SIZE; i++) {
         if (max < arr[i]) {
@@ -15,9 +15,9 @@ double max_array_seq(double * arr, int SIZE) {
     return max;
 }
 
-double min_array_seq(double * arr, int SIZE) {
+double min_array_seq(double * arr, long int SIZE) {
     
-    int i;
+    long int i;
     double min = arr[0];
     for (i = 1; i < SIZE; i++) {
         if (min > arr[i]) {
@@ -27,9 +27,9 @@ double min_array_seq(double * arr, int SIZE) {
     return min;
 }
 
-double avg_array_seq(double * arr, int SIZE) {
+double avg_array_seq(double * arr, long int SIZE) {
 
-    int i;
+    long int i;
     double sum = 0;
     for (i = 0; i < SIZE; i++) {
         sum += arr[i];
@@ -38,9 +38,9 @@ double avg_array_seq(double * arr, int SIZE) {
     return avg;
 }
 
-double std_array_seq(double * arr, int SIZE) {
+double std_array_seq(double * arr, long int SIZE) {
 
-    int i;
+    long int i;
     double sum = 0;
     double avg = avg_array_seq(arr, SIZE);
 

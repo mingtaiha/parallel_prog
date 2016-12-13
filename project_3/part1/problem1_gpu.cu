@@ -3,7 +3,6 @@
 #include "problem1.h"
 
 
-
 __global__ void hello(char *a, int *b)
 {
 	a[threadIdx.x] += b[threadIdx.x];
@@ -35,61 +34,65 @@ void hello_gpu(char *a, int *b, const int N, const int blocksize) {
 }
 
 
-__global__ void kernel_max(double * array, double * max, int num_elem)
+__global__ void kernel_max(double * array, double * max, long int num_elem)
 {
 
-	extern __shared__ double sdata[];
-	int tid = threadIdx.x;
-	int idx = blockIdx.x - 1* blockDim.x + threadIdx.x;
-
-	//sdata[tid] = 5.0;
-	sdata[tid] = array[idx];
-	int i = (unsigned int)ceil((float)blockDim.x/2);
-
-	__syncthreads();
-
 	/*
-	int i;
+	extern __shared__ double sdata[];
+	unsigned long int tid = threadIdx.x;
+	unsigned long int idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+	
+	sdata[tid] = array[idx];
+	//unsigned int i = (unsigned int)ceil((float)blockDim.x/2);
+		__syncthreads();
+
+	unsigned long int i;
 	for ( i = 1; i < blockDim.x; i*=2)
 	{
-		if ((tid % (2*i) == 0) && (idx + i < num_elem)) {
+		if ((tid % (2*i) == 0) && (idx + i < num_elem)) 
+		{
 			sdata[tid] = (sdata[tid] > sdata[tid + i]) ? sdata[tid] : sdata[tid + i];
 		}
+		__syncthreads();
+	}
+	__syncthreads();
+
+	if ( tid == 0 )
+	{
+		max[blockIdx.x] = sdata[tid];
 	}
 	*/
 
-		
-	while( i!=0 )
-	{
-		if ( tid+i < num_elem && idx < i )
-		{
-			sdata[idx] = (sdata[idx] > sdata[idx+i]) ? sdata[idx] : sdata[idx+i];
-		}
-		i /= 2;
-	}
 	
-	
-	__syncthreads();
+	long int idx = (blockIdx.x * blockDim.x) + threadIdx.x;
 
-	
-	if ( tid == 0 )
+	max[idx] = array[idx];
+
+	long int i;
+	for (i = 1; i < num_elem ; i*=2)
 	{
-		max[blockIdx.x] = sdata[0];
+		if ((idx % (2*i) == 0) && (idx + i < num_elem))
+		{
+			max[idx] = (max[idx] > max[idx + i]) ? max[idx] : max[idx + i];
+		}
+		__syncthreads();
 	}
-	
+	__syncthreads();
 	
 }
 
-void max_gpu(double *array, int size, int tpb)
+void max_gpu(double *array, long int size, int tpb)
 {
 
-	int nblocks = (int)ceil((double)size / (double)tpb);
+	long int nblocks = (long int)ceil((double)size / (double)tpb);
+	printf("N blocks: %ld\n", nblocks);
 
-	double *dev_array;
+	double *dev_array, *dev_array2;
 	double *dev_max_array;
-	int arr_size = size * sizeof(double);
+	double *dev_final_max_array;
+	long int arr_size = size * sizeof(double);
 
-	//double *arr2 = (double *) malloc(size * sizeof(double));
 	double *max_array = (double *) malloc(nblocks * sizeof(double));
 	//double *output_array;
 	//max_array[0] = 11.11;
@@ -98,28 +101,64 @@ void max_gpu(double *array, int size, int tpb)
 
 	printf("cudaMalloc'ing\n");
 	cudaMalloc( (void**)&dev_array, arr_size);
-	cudaMalloc( (void**)&dev_max_array, 1 * sizeof(double));
+	cudaMalloc( (void**)&dev_array2, arr_size);
+	cudaMalloc( (void**)&dev_max_array, nblocks * sizeof(double));
+	cudaMalloc( (void**)&dev_final_max_array, nblocks * sizeof(double));
 
-	printf("%f\n", array[0]);
+	//printf("%f\n", array[0]);
 	printf("cudaMemcpy to device\n");
 	cudaMemcpy(dev_array, array, arr_size, cudaMemcpyHostToDevice);
 	//cudaMemcpy(arr2, dev_array, arr_size, cudaMemcpyDeviceToHost);
 	//printf("%f\n", arr2[0]);
 	cudaMemcpy(dev_max_array, max_array, nblocks * sizeof(double), cudaMemcpyHostToDevice);	
 
-	printf("Calling kernel_max\n");
+	//printf("Calling kernel_max\n");
 	
-	dim3 dimGrid(16, 1);
-	dim3 dimBlock(32, 1);
-	kernel_max<<<dimGrid, dimBlock>>>(dev_array, dev_max_array, size);
-	//cudaDeviceSynchronize();
+	int count = 0;
+	//printf("Calling kernel_max\n");
+	while (nblocks/tpb >= 1) {
+		printf("Calling kernel_max\n");
+		if (count % 2 == 0) {
+			kernel_max<<<nblocks, tpb, tpb * sizeof(double)>>>(dev_array, dev_array2, size);
+		}
+		else
+		{
+			kernel_max<<<nblocks, tpb, tpb * sizeof(double)>>>(dev_array2, dev_array, size);
+		}
+	//kernel_max<<<dimGrid, tpb, tpb * sizeof(double)>>>(dev_array, dev_max_array, size);
+		cudaThreadSynchronize();
+		count++;
+		size = nblocks;
+		nblocks = (long int)ceil((double)size / double(tpb));
+	}
+	//cudaError_t code = cudaMemcpy(max_array, dev_max_array, nblocks * sizeof(double), cudaMemcpyDeviceToHost);
+	//cudaError_t code = cudaMemcpy(array, dev_array, nblocks * sizeof(double), cudaMemcpyDeviceToHost);
+	//int i = 0;
+	//for(; i < nblocks; i++) { printf("%f\n", max_array[i]); }
 	
+	//printf("Calling reduced kernel_max\n");
+	//printf("Calling reduced kernel_max\n");
+	//kernel_max<<<1, dimGrid, tpb * sizeof(double)>>>(dev_max_array, dev_final_max_array, nblocks);
+	//cudaThreadSynchronize();
+	
+	cudaError_t code;
+	if (count % 2 == 0) {	
+		code = cudaMemcpy(max_array, dev_array, nblocks * sizeof(double), cudaMemcpyDeviceToHost);
+	}
+	else
+	{
+		code = cudaMemcpy(max_array, dev_array2, nblocks * sizeof(double), cudaMemcpyDeviceToHost);
+	}
+	//i = 0;	
+	//for(; i < nblocks; i++) { printf("%f\n", max_array[i]); }
 	//printf("cudaMemcpy to host\n");
 	
-	cudaError_t code = cudaMemcpy(max_array, dev_max_array, 1 * sizeof(double), cudaMemcpyDeviceToHost);
-	printf("%d\n", code);
+	//cudaError_t code = cudaMemcpy(max_array, dev_max_array, nblocks * sizeof(double), cudaMemcpyDeviceToHost);
+	printf("Code: %d\n", code);
 	printf( "Max: %f\n", max_array[0] );
 
+	//i = 0;
+	//for(; i < nblocks; i++) { printf("%f\n", max_array[i]); }
 	free( max_array );
 	cudaFree( dev_array );
 	cudaFree( dev_max_array );

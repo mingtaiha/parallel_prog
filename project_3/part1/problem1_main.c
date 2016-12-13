@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv)
 {
-	int SIZE = atoi(argv[1]);
+	long int SIZE = atol(argv[1]);
+	int tpb = atoi(argv[2]);
 	printf("Making array\n");
 	double *arr = make_array(SIZE);
 
@@ -15,7 +16,6 @@ int main(int argc, char **argv)
 	double std = std_array_seq(arr, SIZE);
 	printf("Std: %f\n", std);
 
-	int tpb = 512;
 	max_gpu(arr, SIZE, tpb);
 
 	return 0;
