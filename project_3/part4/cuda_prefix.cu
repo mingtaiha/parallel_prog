@@ -13,10 +13,18 @@
 #define LOG_NUM_BANKS 4  
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
-__global__ void find_repeats(int *dev_a, int *dev_b, int n) {
-
-
+__global__ void find_repeats(int *a, int *b, int n) {
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
+	if (index < n - 1) {
+		if (a[index] == a[index + 1]) {
+			b[index] = 1;
+		}
+		else {
+			b[index] = 0;
+		}
+	}
 }
+
 __global__ void exclusive_scan(int *dev_b, int *dev_c, int n) {
 	extern __shared__ float temp[];  // allocated on invocation  
 	int thid = threadIdx.x;
