@@ -5,51 +5,65 @@
 
 #define TEST 0
 
-double ** make_matrix(int ROW, int COL) {
-	double ** matrix = (double **) malloc(ROW * sizeof(double *));
+double * make_matrix(int ROW, int COL) {
+	double * matrix = (double *) malloc(ROW * COL * sizeof(double));
 	srand(time(NULL));
 
-	int i, j;
-	for (i = 0; i < ROW; i++) {
-		matrix[i] = (double *) malloc(COL * sizeof(double));
-		for (j = 0; j < COL; j++) {
-			matrix[i][j] = (double)rand() / (double)RAND_MAX * 1000;
-		}
+	int i;
+	for (i = 0; i < (ROW * COL); i++) {
+		matrix[i] = (double)rand() / (double)RAND_MAX * 1000;
 	}
 	return matrix;
 }
 
-void print_matrix(double ** matrix, int ROW, int COL) {
+void print_matrix(double * matrix, int ROW, int COL) {
 	int i;
-	for (i = (ROW - 25); i < ROW; i++) {
-		printf("%f\n", matrix[i][COL - 1]);
+	for (i = ((ROW * COL) - 25); i < (ROW * COL); i++) {
+		printf("%f\n", matrix[i]);
 	}
 }
 
-void write_matrix(double ** matrix, char * filename, int ROW, int COL) {
+void write_matrix(double * matrix, char * filename, int ROW, int COL) {
 	FILE *f = fopen(filename, "wb");
 	printf("Writing Matrix\n");
-	int i;
-	for (i = 0; i < ROW; i++) {
-		fwrite(matrix[i], sizeof(double), COL, f);
-	}
+	fwrite(matrix, sizeof(double), ROW * COL, f);
 }
 
-double ** read_matrix(char * filename, int ROW, int COL) {
-	double ** matrix = (double **) malloc(ROW * sizeof(double *));
+double* read_matrix(char * filename, int ROW, int COL) {
+	double * matrix = (double *) malloc(ROW * COL * sizeof(double));
 	FILE *f = fopen(filename, "rb");
 	if (f == NULL) {
 		printf("Error reading file\n");
 		exit(0);
 	}
 	printf("Reading Matrix\n");
-	int i;
-	for (i = 0; i < ROW; i++){
-		matrix[i] = (double *) malloc(COL * sizeof(double));
-		fread(matrix[i], sizeof(double), COL, f);
-	}
+	fread(matrix, sizeof(double), ROW * COL, f);
+	
 	return matrix;
 }
+
+double * diff_matrix(double * mat1, double * mat2, int ROW1, int COL1, int ROW2, int COL2)
+{
+	if ((ROW1 != ROW2) || (COL1 != COL2))
+	{
+		printf("Matrix Dimensions don't match\n");
+		return NULL;
+	}
+	else
+	{
+		double * diff = (double *)malloc(ROW1 * COL1 * sizeof(double));
+		int i;
+		for (i = 0; i < ROW1 * COL1; i++)
+		{
+			diff[i] = mat1[i] - mat2[i];
+		}
+		return diff;
+	}
+}
+
+
+
+
 
 #if TEST
 
@@ -58,10 +72,10 @@ int main(int argc, char * argv[]) {
 	char * mat_name = argv[1];
 	int ROW = atoi(argv[2]);
 	int COL = atoi(argv[3]);
-	double ** mat = make_matrix(ROW, COL);
+	double * mat = make_matrix(ROW, COL);
 	print_matrix(mat, ROW, COL);
 	write_matrix(mat, mat_name, ROW, COL);
-	double ** mat2 = read_matrix(mat_name, ROW, COL);
+	double * mat2 = read_matrix(mat_name, ROW, COL);
 	print_matrix(mat, ROW, COL);
 
 	return 0;	

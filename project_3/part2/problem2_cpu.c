@@ -2,7 +2,7 @@
 
 #define TEST 0
 
-double ** mult_matrix_seq(double ** A, double ** B, int ROW_A, int COL_A, int ROW_B, int COL_B) {
+double * mult_matrix_seq(double * A, double * B, int ROW_A, int COL_A, int ROW_B, int COL_B) {
 
     if (COL_A != ROW_B) {
         printf("Can't multiply. Dimensions don't match\n");
@@ -12,19 +12,17 @@ double ** mult_matrix_seq(double ** A, double ** B, int ROW_A, int COL_A, int RO
     printf("Mutliplying Matrix\n");
 
     int i, j, k;
-    double ** C = (double **) malloc(ROW_A * sizeof(double *));
-    for (i = 0; i < ROW_A; i++) {
-        C[i] = (double *) calloc(COL_B, sizeof(double));
-    }
+    double * C = (double *) calloc(ROW_A * COL_B, sizeof(double));
     
     for (i = 0; i < ROW_A; i++) {
         for (j = 0; j < COL_B; j++) {
             for (k = 0; k < COL_A; k++) {
-                C[i][j] += A[i][k] * B[k][j];
+                C[(ROW_A * i) + j] += A[(COL_A * i) + k] * B[(COL_B * k) + j];
             }
         }            
     }
     printf("Done Multiplying\n");
+    return C;
 }
 
 #if TEST
