@@ -7,8 +7,8 @@
 #include <cmath>
 #include <device_functions.h>
 
-#define N 8
-#define THREADS_PER_BLOCK 2
+#define N 1048576
+#define THREADS_PER_BLOCK 1024
 
 #define cudaCheckErrors(msg) \
     do { \
@@ -40,34 +40,8 @@ typedef struct Node {
 void randomGen(int *input, int size) {
 	srand(time(NULL));
 	for (int i = 0; i < size; i++) {
-		input[i] = rand() % 10;
+		input[i] = rand() % 100;
 	}
-}
-
-
-//This is working properly
-__device__ void parallelAdd(int *input, int *sum, int count) {
-	int index = threadIdx.x + blockIdx.x * blockDim.x;
-	int divisor = 2;
-	for (int i = 0; i < count; i++) {
-		if (index % divisor == 0) {
-			input[index] = input[index] + input[index + divisor/2];
-			divisor *= 2;
-		}
-		__syncthreads();
-	}
-
-	if (index == 0) { //Initializing the Node
-		*sum = input[0] - input[N - 1]; //exclusive scan does not include the last value
-	}
-	
-}
-
-__device__ int power(int a, int b) {
-	for (int i = 0; i < b; i++) {
-		a *= a;
-	}
-	return a;
 }
 
 __device__ void downPass(Node *nodeArray, int count) {
@@ -86,19 +60,7 @@ __device__ void downPass(Node *nodeArray, int count) {
 
 	__syncthreads();
 
-
-	if (index == 0) {
-		nodeArray[3].fromLeft = nodeArray[1].fromLeft;
-		nodeArray[4].fromLeft = nodeArray[1].fromLeft + nodeArray[3].sum;
-	}
-	if (index == 4) {
-		nodeArray[5].fromLeft = nodeArray[2].fromLeft;
-		nodeArray[6].fromLeft = nodeArray[2].fromLeft + nodeArray[5].sum;
-	}
-	
-	__syncthreads();
-
-	/*int divisor = N / 2;
+	int divisor = N / 2;
 	for (int i = 1; i < count; i++) {
 		if (index%divisor == 0) {
 			//int random = i - 1;
@@ -109,7 +71,7 @@ __device__ void downPass(Node *nodeArray, int count) {
 			divisor /= 2;
 		}
 		__syncthreads();
-	}*/
+	}
 }
 
 //Tree builds!!!!
@@ -117,7 +79,7 @@ __device__ void buildTree(int *input, Node *nodeArray, int *sum, int count) {
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
 	nodeArray[index + (N-1)].sum = input[index]; //Save all the leaf nodes
 	int divisor = 2;
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) { //Generate all of the parent nodes
 		if (index % divisor == 0) {
 			nodeArray[(index+(N-1))/divisor].sum = nodeArray[(index+(N-1))/(divisor/2)].sum + nodeArray[(index + N)/(divisor/2)].sum;
 			divisor *= 2;
@@ -219,32 +181,16 @@ int main() {
 		}
 	}
 
-	//print out the node array
-	for (int i = 0; i < (2*N-1); i++) {
-		printf("%d ", nodeArray[i].sum);
-	}
-	printf(" \n");
 
-	//print out the node array
-	for (int i = 0; i < (2 * N - 1); i++) {
-		printf("%d ", nodeArray[i].fromLeft);
-	}
-	printf(" \n");
-
-
-
-	//print out the c array
-	for (int i = 0; i < N; i++) {
-		printf("%d ", c[i]);
-	}
-	printf("\n");
-
-	printf("Last element of find_repeats: %d\n", 0); //replace
+	printf("Last element of find_repeats: %d\n", c[N-j]); //replace
 
 	cudaFree(dev_a);
 	cudaFree(dev_b);
+	cudaFree(dev_A);
+	cudaFree(totalSum);
+	cudaFree(dev_nodeArray);
 	//cudaFree(dev_c);
-	free(a); free(b); free(c);
+	free(a); free(b); free(c); free(nodeArray);
 	return 0;
 
 }
