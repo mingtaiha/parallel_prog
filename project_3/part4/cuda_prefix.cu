@@ -145,11 +145,6 @@ int main() {
 	//Make random array
 	randomGen(a, N);
 
-	for (int i = 0; i < N; i++) {
-		printf("%d ", a[i]);
-	}
-	printf("\n");
-
 	cudaMemcpy(dev_a, a, size, cudaMemcpyHostToDevice);
 
 	//This works properly
