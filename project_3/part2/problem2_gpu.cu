@@ -147,12 +147,12 @@ double * mat_mult_gpu_basic(double * A, double * B, int ROW_A, int COL_A,  int R
 	dim3 threadsPerBlock(BLOCK_DIM, BLOCK_DIM);
 	dim3 blocksPerGrid((int)ceil((double)ROW_A / (double)threadsPerBlock.x), (int)ceil((double)COL_B / (double)threadsPerBlock.y));
 
-	printf("Basic  GPU Matrix Multiplication\n");
+	printf("Basic GPU Matrix Multiplication\n");
 
 	clock_t start, end;
 	start = clock();
 
-	printf("Basic (Shared)  GPU Matrix Multiplication\n");
+	printf("Basic GPU Matrix Multiplication\n");
 	mat_mult_basic<<<blocksPerGrid, threadsPerBlock>>>(dev_a, dev_b, dev_c, ROW_A, COL_A, ROW_B, COL_B);
 	cudaThreadSynchronize();
 
@@ -259,38 +259,65 @@ double * mat_mult_gpu_optimized(double * A, double * B, int ROW_A, int COL_A,  i
 }
 
 
-double * mat_mult_gpu_cublas(double * A, double * B, int ROW_A, int COL_A, int ROW_B, int COL_B)
+double * mat_mult_gpu_cublas_api(double * A, double * B, int ROW_A, int COL_A, int ROW_B, int COL_B)
 {
 
-	int size_a, size_b, size_c;
+	int size_a, size_b;
 	
-	size_a = ROW_A * COL_A * sizeof(double);
-	size_b = ROW_B * COL_B * sizeof(double);
-	size_c = ROW_A * COL_B * sizeof(double);
+	size_a = COL_A * sizeof(double);
+	size_b = ROW_B * sizeof(double);
 
-	double *dev_a, *dev_b, *dev_c;
+	double *dev_row_vec, *dev_col_vec, *dev_c;
 
-	double *C = (double *) malloc(size_c);
-	cudaMalloc((void**)&dev_a, size_a);	
-	cudaMalloc((void**)&dev_b, size_b);	
-	cudaMalloc((void**)&dev_c, size_c);	
+	double *c = (double *) malloc(sizeof(double));
+	double *C = (double *) malloc(ROW_A * COL_B * sizeof(double));
+	cudaMalloc((void**)&dev_row_vec, size_a);
+	cudaMalloc((void**)&dev_col_vec, size_b);
+	cudaMalloc((void**)&dev_c, sizeof(double));
 
 	cublasHandle_t handle;
 	cublasCreate(&handle);
 
-	cublasSetMatrix(ROW_A, COL_A, sizeof(double), A, ROW_A, dev_a, ROW_A);
-	cublasSetMatrix(ROW_B, COL_B, sizeof(double), B, ROW_B, dev_b, ROW_B);
-	cublasSetMatrix(ROW_A, COL_B, sizeof(double), C, ROW_A, dev_c, ROW_A);
+	int i, j, k;
+	double *row_vec = (double *) malloc(size_a);
+	double *col_vec = (double *) malloc(size_b);
+	
+	clock_t start, end;
+	double runtime = 0;
 
-	double alpha = 1.0;
-	double beta = 1.0;
-	cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, ROW_A, COL_B, COL_A, &alpha, dev_a, ROW_A, dev_b, ROW_B, &beta, dev_c, ROW_A);
+	for (i = 0; i < ROW_A; i++)
+	{
+		for (j = 0; j < COL_B; j++)
+		{
+			for (k = 0; k < COL_A; k++)
+			{
+				row_vec[k] = A[(i * COL_A) + k];
+				col_vec[k] = B[(k * COL_B) + j];
+			}
+			cublasSetVector(COL_A, sizeof(double), row_vec, 1, dev_row_vec, 1);
+			cublasSetVector(ROW_B, sizeof(double), col_vec, 1, dev_col_vec, 1);
+			cublasGetVector(COL_A, sizeof(double), dev_row_vec, 1, row_vec, 1);
+			cublasGetVector(ROW_B, sizeof(double), dev_col_vec, 1, col_vec, 1);
 
-	cublasGetMatrix(ROW_A, COL_B, sizeof(double), dev_c, ROW_A, C, ROW_A);
+			start = clock();
 
-	cudaFree(dev_a);
-	cudaFree(dev_b);
-	cudaFree(dev_c);
+			cublasDdot(handle, COL_A, dev_row_vec, 1, dev_col_vec, 1, c);
+			cudaThreadSynchronize();
+
+			end = clock();
+
+			C[(i * COL_B) + j] = *c;
+			
+			runtime += ((double)end - (double)start);
+		}
+	}
+
+
+	printf("Time for CUBLAS API Matrix Multiplication: %f\n", runtime / CLOCKS_PER_SEC);
+
+	free(c);
+	cudaFree(dev_row_vec);
+	cudaFree(dev_col_vec);
 	cublasDestroy(handle);
 
 	return C;

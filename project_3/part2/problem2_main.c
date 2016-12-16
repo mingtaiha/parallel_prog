@@ -18,11 +18,17 @@ int main(int argc, char * argv[]) {
     double * C_seq = mult_matrix_seq(mat1, mat2, ROW1, COL1, ROW2, COL2);
     //print_matrix(C_seq, ROW1, COL2);
 
+
     printf("\n");
+
 
     //printf("GPU Basic Matrix Multiplication\n");
     double * C_gpu_basic = mat_mult_gpu_basic(mat1, mat2, ROW1, COL1, ROW2, COL2);
     //print_matrix(C_gpu_basic, ROW1, COL2);
+
+    //printf("GPU CUBLAS API Matrix Multiplication\n");
+    double * C_gpu_cublas_api = mat_mult_gpu_cublas_api(mat1, mat2, ROW1, COL1, ROW2, COL2);
+    //print_matrix(C_gpu_cublas_api, ROW1, COL2);
 
     //printf("GPU CUBLAS Matrix Multiplication\n");
     double * C_gpu_cublas = mat_mult_gpu_cublas(mat1, mat2, ROW1, COL1, ROW2, COL2);
@@ -32,12 +38,17 @@ int main(int argc, char * argv[]) {
     double * C_gpu_optimized = mat_mult_gpu_optimized(mat1, mat2, ROW1, COL1, ROW2, COL2);
     //print_matrix(C_gpu_cublas, ROW1, COL2);
 
+
     printf("\n\n");
 
-    
+
     double diff_basic = diff_matrix(C_seq, C_gpu_basic, ROW1, COL2, ROW1, COL2);
     printf("Avg CPU / GPU Basic MSE: %f\n", diff_basic);
     //print_matrix(diff_basic, ROW1, COL1);
+
+    double diff_cublas_api = diff_matrix(C_seq, C_gpu_cublas_api, ROW1, COL2, ROW1, COL2);
+    printf("Avg CPU / GPU CUBLAS API MSE: %f\n", diff_cublas_api);
+    //print_matrix(diff_cublas_api, ROW1, COL1);
 
     double diff_cublas = diff_matrix(C_seq, C_gpu_cublas, ROW1, COL2, ROW1, COL2);
     printf("Avg CPU / GPU CUBLAS MSE: %f\n", diff_cublas);
@@ -49,23 +60,6 @@ int main(int argc, char * argv[]) {
 
 
     printf("\n\n");
-    print_matrix(C_seq, ROW1, COL2);
-
-    printf("GPU Basic Matrix Multiplication\n");
-    double * C_gpu_basic = mat_mult_gpu_basic(mat1, mat2, ROW1, COL1, ROW2, COL2);
-    print_matrix(C_gpu_basic, ROW1, COL2);
-
-    printf("GPU CUBLAS Matrix Multiplication\n");
-    double * C_gpu_cublas = mat_mult_gpu_cublas(mat1, mat2, ROW1, COL1, ROW2, COL2);
-    print_matrix(C_gpu_cublas, ROW1, COL2);
-
-    printf("CPU / GPU Basic diff\n");
-    double * diff_basic = diff_matrix(C_seq, C_gpu_basic, ROW1, COL2, ROW1, COL2);
-    print_matrix(diff_basic, ROW1, COL1);
-
-    printf("CPU / GPU CUBLAS diff\n");
-    double * diff_cublas = diff_matrix(C_seq, C_gpu_cublas, ROW1, COL2, ROW1, COL2);
-    print_matrix(diff_cublas, ROW1, COL1);
 
 
     return 0;
