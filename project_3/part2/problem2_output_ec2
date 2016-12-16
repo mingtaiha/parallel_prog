@@ -1,25 +1,4 @@
 CPU Matrix Multiplication
-Time for CPU Matrix Multiplication: 0.000000
-
-Basic  GPU Matrix Multiplication
-Basic (Shared)  GPU Matrix Multiplication
-Time for Basic Matrix Multiplication: 0.000000
-GPU CUBLAS API Matrix Multiplication
-Time for CUBLAS API Matrix Multiplication: 0.000000
-CUBLAS GPU Matrix Multiplication
- ** On entry to DGEMM  parameter number 8 had an illegal value
-Time for CUBLAS Matrix Multiplication: 0.000000
-Optimized GPU Matrix Multiplication
-Time for Optimized Matrix Multiplication: 0.000000
-
-
-Avg CPU / GPU Basic MSE: -nan
-Avg CPU / GPU CUBLAS API MSE: -nan
-Avg CPU / GPU CUBLAS MSE: -nan
-Avg CPU / GPU Optimized MSE: -nan
-
-
-CPU Matrix Multiplication
 Time for CPU Matrix Multiplication: 0.110000
 
 Basic  GPU Matrix Multiplication

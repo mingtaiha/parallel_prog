@@ -147,8 +147,6 @@ double * mat_mult_gpu_basic(double * A, double * B, int ROW_A, int COL_A,  int R
 	dim3 threadsPerBlock(BLOCK_DIM, BLOCK_DIM);
 	dim3 blocksPerGrid((int)ceil((double)ROW_A / (double)threadsPerBlock.x), (int)ceil((double)COL_B / (double)threadsPerBlock.y));
 
-	printf("Basic GPU Matrix Multiplication\n");
-
 	clock_t start, end;
 	start = clock();
 
@@ -282,6 +280,8 @@ double * mat_mult_gpu_cublas_api(double * A, double * B, int ROW_A, int COL_A, i
 	double *row_vec = (double *) malloc(size_a);
 	double *col_vec = (double *) malloc(size_b);
 	
+	printf("CUBLAS API GPU Matrix Multiplication\n");
+
 	clock_t start, end;
 	double runtime = 0;
 
