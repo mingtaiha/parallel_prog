@@ -451,12 +451,12 @@ int main(int argc, char* argv[]) {
 	}
 	*/
 
-	printf("\n");
-	printf("time taken: %f\n", timeTaken);
-
 	cudaFree(&d_graph);
 
 	printGraph(g, graphSize);
+
+	printf("\n");
+	printf("time taken: %f\n", timeTaken);
 
 	if (genFlag) { //then we generated a graph that needs to be written
 		writeGraph(g, fileName, graphSize); // save graph to file
