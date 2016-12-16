@@ -214,7 +214,7 @@ void writeGraph(vertex** graph, char* fileName, long int size) {
 	printf("Writing Array\n");
 	i = 0;
 	fwrite(array1d, sizeof(int), size*size, f);
-	fclose
+	fclose(f);
 	free(array1d);
 }
 
@@ -241,6 +241,7 @@ vertex** readGraph(char * filename, long int size) {
 		}
 	}
 
+	fclose(f);
 	free(array1d);
 
 	return graph;
