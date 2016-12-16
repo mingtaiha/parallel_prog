@@ -42,28 +42,26 @@ double* read_matrix(char * filename, int ROW, int COL) {
 	return matrix;
 }
 
-double * diff_matrix(double * mat1, double * mat2, int ROW1, int COL1, int ROW2, int COL2)
+double diff_matrix(double * mat1, double * mat2, int ROW1, int COL1, int ROW2, int COL2)
 {
 	if ((ROW1 != ROW2) || (COL1 != COL2))
 	{
 		printf("Matrix Dimensions don't match\n");
-		return NULL;
+		return -1;
 	}
 	else
 	{
-		double * diff = (double *)malloc(ROW1 * COL1 * sizeof(double));
+		double mse = 0;
+
 		int i;
 		for (i = 0; i < ROW1 * COL1; i++)
 		{
-			diff[i] = mat1[i] - mat2[i];
+			mse = (mat1[i] - mat2[i]) * (mat1[i] - mat2[i]);
 		}
-		return diff;
+		mse /= ((double)ROW1 * (double)COL1);
+		return mse;
 	}
 }
-
-
-
-
 
 #if TEST
 

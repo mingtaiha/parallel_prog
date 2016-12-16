@@ -1,0 +1,144 @@
+Making array
+
+
+CPU Part
+Time for Max: 0.030000
+Max: 999.999985
+Time for Min: 0.040000
+Min: 0.000148
+Time for Avg: 0.030000
+Avg: 500.080049
+Time for Avg: 0.040000
+Time for Std: 0.070000
+Std: 288.642091
+
+
+GPU Part
+Time for Max: 0.030000
+Max: 999.999985
+Time for Min: 0.020000
+Min: 0.000148
+Time for Avg: 0.030000
+Avg: 24309.144783
+Time for Std: 0.070000
+Std: 23811.314261
+Making array
+
+
+CPU Part
+Time for Max: 0.060000
+Max: 999.999828
+Time for Min: 0.070000
+Min: 0.000101
+Time for Avg: 0.070000
+Avg: 499.965584
+Time for Avg: 0.070000
+Time for Std: 0.140000
+Std: 288.690986
+
+
+GPU Part
+Time for Max: 0.060000
+Max: 999.999828
+Time for Min: 0.060000
+Min: 0.000101
+Time for Avg: 0.050000
+Avg: 499.991335
+Time for Std: 0.120000
+Std: 288.691032
+Making array
+
+
+CPU Part
+Time for Max: 0.090000
+Max: 999.999966
+Time for Min: 0.100000
+Min: 0.000085
+Time for Avg: 0.100000
+Avg: 500.001512
+Time for Avg: 0.110000
+Time for Std: 0.210000
+Std: 288.689695
+
+
+GPU Part
+Time for Max: 0.080000
+Max: 999.999966
+Time for Min: 0.090000
+Min: 0.000085
+Time for Avg: 0.080000
+Avg: 500.024530
+Time for Std: 0.180000
+Std: 288.689736
+Making array
+
+
+CPU Part
+Time for Max: 0.130000
+Max: 999.999978
+Time for Min: 0.130000
+Min: 0.000042
+Time for Avg: 0.140000
+Avg: 500.023359
+Time for Avg: 0.130000
+Time for Std: 0.270000
+Std: 288.652375
+
+
+GPU Part
+Time for Max: 0.110000
+Max: 999.999978
+Time for Min: 0.110000
+Min: 0.000042
+Time for Avg: 0.120000
+Avg: 500.046377
+Time for Std: 0.220000
+Std: 288.652416
+Making array
+
+
+CPU Part
+Time for Max: 0.170000
+Max: 999.999958
+Time for Min: 0.160000
+Min: 0.000024
+Time for Avg: 0.170000
+Avg: 500.067542
+Time for Avg: 0.170000
+Time for Std: 0.350000
+Std: 288.654317
+
+
+GPU Part
+Time for Max: 0.150000
+Max: 999.999958
+Time for Min: 0.150000
+Min: 0.000024
+Time for Avg: 0.150000
+Avg: 500.080544
+Time for Std: 0.280000
+Std: 288.654340
+Making array
+
+
+CPU Part
+Time for Max: 0.190000
+Max: 999.999989
+Time for Min: 0.190000
+Min: 0.000040
+Time for Avg: 0.210000
+Avg: 499.954933
+Time for Avg: 0.210000
+Time for Std: 0.420000
+Std: 288.678471
+
+
+GPU Part
+Time for Max: 0.170000
+Max: 999.999989
+Time for Min: 0.170000
+Min: 0.000040
+Time for Avg: 0.160000
+Avg: 499.969647
+Time for Std: 0.350000
+Std: 288.678497

@@ -1,10 +1,12 @@
-#include <math.h>
+#include <time.h>
 #include "problem1.h"
 
 #define TEST 0
 
 double max_array_seq(double * arr, long int SIZE) {
 
+    clock_t start, end;
+    start = clock();
     long int i;
     double max = arr[0];
     for (i = 1; i < SIZE; i++) {
@@ -12,11 +14,15 @@ double max_array_seq(double * arr, long int SIZE) {
             max = arr[i];
         }
     }
+    end = clock();
+    printf("Time for Max: %f\n", (((double)end - (double)start)) / CLOCKS_PER_SEC);
     return max;
 }
 
 double min_array_seq(double * arr, long int SIZE) {
     
+    clock_t start, end;
+    start = clock();
     long int i;
     double min = arr[0];
     for (i = 1; i < SIZE; i++) {
@@ -24,22 +30,30 @@ double min_array_seq(double * arr, long int SIZE) {
             min = arr[i];
         }
     }
+    end = clock();
+    printf("Time for Min: %f\n", (((double)end - (double)start)) / CLOCKS_PER_SEC);
     return min;
 }
 
 double avg_array_seq(double * arr, long int SIZE) {
 
+    clock_t start, end;
+    start = clock();
     long int i;
     double sum = 0;
     for (i = 0; i < SIZE; i++) {
         sum += arr[i];
     }
     double avg = sum / SIZE;
+    end = clock();
+    printf("Time for Avg: %f\n", (((double)end - (double)start)) / CLOCKS_PER_SEC);
     return avg;
 }
 
 double std_array_seq(double * arr, long int SIZE) {
 
+    clock_t start, end;
+    start = clock();
     long int i;
     double sum = 0;
     double avg = avg_array_seq(arr, SIZE);
@@ -48,6 +62,8 @@ double std_array_seq(double * arr, long int SIZE) {
         sum += (arr[i] - avg) * (arr[i] - avg);
     }
     double std = sqrt(sum / SIZE);
+    end = clock();
+    printf("Time for Std: %f\n", (((double)end - (double)start)) / CLOCKS_PER_SEC);
     return std;
 }
 

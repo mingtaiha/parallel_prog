@@ -1,0 +1,80 @@
+CPU Matrix Multiplication
+Time for CPU Matrix Multiplication: 0.010000
+
+Basic  GPU Matrix Multiplication
+Time for Basic Matrix Multiplication: 0.000000
+CUBLAS GPU Matrix Multiplication
+Time for CUBLAS Matrix Multiplication: 0.000000
+Optimized GPU Matrix Multiplication
+Time for Optimized Matrix Multiplication: 0.000000
+
+
+Avg CPU / GPU Basic MSE: 0.000000
+Avg CPU / GPU CUBLAS MSE: 0.000000
+Avg CPU / GPU Optimized MSE: 0.000000
+
+
+CPU Matrix Multiplication
+Time for CPU Matrix Multiplication: 0.110000
+
+Basic  GPU Matrix Multiplication
+Time for Basic Matrix Multiplication: 0.000000
+CUBLAS GPU Matrix Multiplication
+Time for CUBLAS Matrix Multiplication: 0.000000
+Optimized GPU Matrix Multiplication
+Time for Optimized Matrix Multiplication: 0.000000
+
+
+Avg CPU / GPU Basic MSE: 0.000000
+Avg CPU / GPU CUBLAS MSE: 0.000000
+Avg CPU / GPU Optimized MSE: 0.000000
+
+
+CPU Matrix Multiplication
+Time for CPU Matrix Multiplication: 0.910000
+
+Basic  GPU Matrix Multiplication
+Time for Basic Matrix Multiplication: 0.010000
+CUBLAS GPU Matrix Multiplication
+Time for CUBLAS Matrix Multiplication: 0.000000
+Optimized GPU Matrix Multiplication
+Time for Optimized Matrix Multiplication: 0.000000
+
+
+Avg CPU / GPU Basic MSE: 0.000000
+Avg CPU / GPU CUBLAS MSE: 0.000000
+Avg CPU / GPU Optimized MSE: 0.000000
+
+
+CPU Matrix Multiplication
+Time for CPU Matrix Multiplication: 12.810000
+
+Basic  GPU Matrix Multiplication
+Time for Basic Matrix Multiplication: 0.060000
+CUBLAS GPU Matrix Multiplication
+Time for CUBLAS Matrix Multiplication: 0.020000
+Optimized GPU Matrix Multiplication
+Time for Optimized Matrix Multiplication: 0.030000
+
+
+Avg CPU / GPU Basic MSE: 0.000000
+Avg CPU / GPU CUBLAS MSE: 0.000000
+Avg CPU / GPU Optimized MSE: 0.000000
+
+
+CPU Matrix Multiplication
+Time for CPU Matrix Multiplication: 148.240000
+
+Basic  GPU Matrix Multiplication
+Time for Basic Matrix Multiplication: 0.460000
+CUBLAS GPU Matrix Multiplication
+Time for CUBLAS Matrix Multiplication: 0.160000
+Optimized GPU Matrix Multiplication
+Time for Optimized Matrix Multiplication: 0.190000
+
+
+Avg CPU / GPU Basic MSE: 0.000000
+Avg CPU / GPU CUBLAS MSE: 0.000000
+Avg CPU / GPU Optimized MSE: 0.000000
+
+

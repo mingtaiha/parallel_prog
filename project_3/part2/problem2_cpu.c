@@ -1,3 +1,4 @@
+#include <time.h>
 #include "problem2.h"
 
 #define TEST 0
@@ -9,11 +10,14 @@ double * mult_matrix_seq(double * A, double * B, int ROW_A, int COL_A, int ROW_B
         exit(0);
     }
     
-    printf("Mutliplying Matrix\n");
+    //printf("Mutliplying Matrix\n");
 
     int i, j, k;
     double * C = (double *) calloc(ROW_A * COL_B, sizeof(double));
     
+    clock_t start, end;
+    start = clock();
+
     for (i = 0; i < ROW_A; i++) {
         for (j = 0; j < COL_B; j++) {
             for (k = 0; k < COL_A; k++) {
@@ -21,7 +25,10 @@ double * mult_matrix_seq(double * A, double * B, int ROW_A, int COL_A, int ROW_B
             }
         }            
     }
-    printf("Done Multiplying\n");
+    end = clock();
+    printf("Time for CPU Matrix Multiplication: %f\n", ((double)end - (double)start) / CLOCKS_PER_SEC);
+    //printf("Done Multiplying\n");
+ 
     return C;
 }
 
