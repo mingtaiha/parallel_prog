@@ -1,0 +1,20 @@
+This is the readme for Project 3 of Parallel & Distributed Programming
+
+We assume that the environment in which you compile this code support nvcc, g++, and gcc compilers
+
+For Problem 1:
+    1) Go to the folder `part1`
+    2) run `make`
+    3) Run the code using the following command:
+        ./problem1 <size_of_array> <threads_per_block>
+
+        ** The inputs are assumed to be positive integers
+
+
+For Problem 2:
+    1) Go to the folder `part2`
+    2) run `make`
+    3) Run the code using the following command:
+        ./problem2 <num_rows_A> <num_cols_A> <num_rows_B> <num_cols_B>
+
+        ** All inputs are assumed to be positive integers, and num_cols_A == num_rows_B
