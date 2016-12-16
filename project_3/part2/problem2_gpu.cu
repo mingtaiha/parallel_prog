@@ -57,9 +57,8 @@ __global__ void mat_mult_optimized(double *dev_a, double *dev_b, double *dev_c, 
 __global__ void mat_mult_basic(double *dev_a, double *dev_b, double *dev_c, int ROW_A, int COL_A, int ROW_B, int COL_B)
 {
 
-<<<<<<< HEAD
 	// Naive Matrix Multiplication
-=======
+
 	__shared__ double s_a[BLOCK_DIM][BLOCK_DIM];
 	__shared__ double s_b[BLOCK_DIM][BLOCK_DIM];
 
@@ -148,15 +147,12 @@ double * mat_mult_gpu_basic(double * A, double * B, int ROW_A, int COL_A,  int R
 	dim3 threadsPerBlock(BLOCK_DIM, BLOCK_DIM);
 	dim3 blocksPerGrid((int)ceil((double)ROW_A / (double)threadsPerBlock.x), (int)ceil((double)COL_B / (double)threadsPerBlock.y));
 
-<<<<<<< HEAD
 	printf("Basic  GPU Matrix Multiplication\n");
 
 	clock_t start, end;
 	start = clock();
 
-=======
 	printf("Basic (Shared)  GPU Matrix Multiplication\n");
->>>>>>> 9e351777a06f470700e696d29b845cb04e692633
 	mat_mult_basic<<<blocksPerGrid, threadsPerBlock>>>(dev_a, dev_b, dev_c, ROW_A, COL_A, ROW_B, COL_B);
 	cudaThreadSynchronize();
 

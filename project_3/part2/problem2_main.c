@@ -16,7 +16,6 @@ int main(int argc, char * argv[]) {
 
     printf("CPU Matrix Multiplication\n");
     double * C_seq = mult_matrix_seq(mat1, mat2, ROW1, COL1, ROW2, COL2);
-<<<<<<< HEAD
     //print_matrix(C_seq, ROW1, COL2);
 
     printf("\n");
@@ -50,7 +49,6 @@ int main(int argc, char * argv[]) {
 
 
     printf("\n\n");
-=======
     print_matrix(C_seq, ROW1, COL2);
 
     printf("GPU Basic Matrix Multiplication\n");
@@ -69,8 +67,6 @@ int main(int argc, char * argv[]) {
     double * diff_cublas = diff_matrix(C_seq, C_gpu_cublas, ROW1, COL2, ROW1, COL2);
     print_matrix(diff_cublas, ROW1, COL1);
 
-
->>>>>>> 9e351777a06f470700e696d29b845cb04e692633
 
     return 0;
 }
