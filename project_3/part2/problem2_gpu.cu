@@ -104,7 +104,6 @@ __global__ void mat_mult_basic(double *dev_a, double *dev_b, double *dev_c, int 
 /*
 
 	// Global Memory Only
->>>>>>> 9e351777a06f470700e696d29b845cb04e692633
 
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
