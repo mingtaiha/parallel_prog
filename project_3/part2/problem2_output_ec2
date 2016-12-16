@@ -1,3 +1,5 @@
+//250x250 Matrices
+
 CPU Matrix Multiplication
 Time for CPU Matrix Multiplication: 0.110000
 
@@ -17,6 +19,8 @@ Avg CPU / GPU CUBLAS API MSE: 0.000000
 Avg CPU / GPU CUBLAS MSE: 0.000000
 Avg CPU / GPU Optimized MSE: 0.000000
 
+
+//500x500 Matrices
 
 CPU Matrix Multiplication
 Time for CPU Matrix Multiplication: 0.920000
@@ -38,6 +42,8 @@ Avg CPU / GPU CUBLAS MSE: 0.000000
 Avg CPU / GPU Optimized MSE: 0.000000
 
 
+//1000x1000 Matrices
+
 CPU Matrix Multiplication
 Time for CPU Matrix Multiplication: 13.610000
 
@@ -57,6 +63,8 @@ Avg CPU / GPU CUBLAS API MSE: 0.000000
 Avg CPU / GPU CUBLAS MSE: 0.000000
 Avg CPU / GPU Optimized MSE: 0.000000
 
+
+//2000x2000 Matrices
 
 CPU Matrix Multiplication
 Time for CPU Matrix Multiplication: 154.980000
