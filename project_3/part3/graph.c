@@ -196,6 +196,56 @@ void destroyGraph(vertex** graph, int size) {
 	printf("graph destroyed!\n");
 }
 
+void writeGraph(vertex** graph, char* fileName, long int size) {
+	FILE* f = fopen(fileName, "wb");
+
+	int* array1d = malloc(sizeof(int)* size * size);
+
+	//flatten graph
+	int i = 0;
+	for (; i < size; ++i) {
+		int j = 0;
+		for (; j < size; ++j) {
+			array1d[j + i*size] = graph[i][j].val;
+		}
+	}
+
+
+	printf("Writing Array\n");
+	i = 0;
+	fwrite(array1d, sizeof(int), size*size, f);
+	fclose
+	free(array1d);
+}
+
+vertex** readGraph(char * filename, long int size) {
+	int* array1d = malloc(sizeof(int) * size * size);
+
+	FILE *f = fopen(filename, "rb");
+	if (f == NULL) {
+		printf("Error reading File\n");
+		return NULL;
+	}
+	printf("Reading Array\n");
+	fread(array1d, sizeof(int), size*size, f);
+
+	vertex** graph = malloc(sizeof(vertex*) * size * size);
+	//expand graph
+	int i = 0;
+	for (; i < size; ++i) {
+		graph[i] = malloc(sizeof(vertex)*size);
+		int j = 0;
+		for (; j < size; ++j) {
+			graph[i][j].val = array1d[j + i*size];
+			graph[i][j].vflag = 0;
+		}
+	}
+
+	free(array1d);
+
+	return graph;
+}
+
 // //for testing, keep to 10 by 10 grid
 
 // int main(int argc, char* const argv[]) {

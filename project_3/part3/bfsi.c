@@ -1,4 +1,8 @@
 //bredth first search with itterative implementation
+//Written By: Cedric Blake
+
+//comile with: gcc -o bfsi linklist.c queue.c graph.c bfsi.c
+//run with: ./bfsi <dimension (length or width) of square graph>
 
 
 #include <stdio.h>
@@ -156,9 +160,15 @@ int main(int argc, char** argv) {
 	//create queue
 	Node* qhead = NULL; //initialize to null for queuePush func
 
+	char* fileName = "graphsave.txt";
+	int genFlag = 0;
 	//create graph
-	vertex** g;
- 	genGraph(&g, n);
+	vertex** g = readGraph(fileName, n);
+	if (g == NULL) {
+ 		genGraph(&g, n);
+ 		genFlag = 1;
+	}
+
  	//create start
 	Node start = bfsStart(&g, n);
 	printf("start at %d, %d\n", *start.coord, *(start.coord+1));
@@ -195,7 +205,9 @@ int main(int argc, char** argv) {
 
  	printGraph(g, n);
 
-
+ 	if (genFlag = 1) { //then we generated a graph that needs to be written
+ 		writeGraph(g, fileName, n); // save graph to file
+ 	}
  	//deallocate graph
  	destroyGraph(g, n);
 

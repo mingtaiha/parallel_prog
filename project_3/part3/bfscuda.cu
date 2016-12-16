@@ -1,3 +1,9 @@
+//Breadth First Search CUDA implementation
+//Written By: Cedric Blake
+
+//Compiled and ran using Microsoft Visual Studio 2015
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -227,6 +233,66 @@ void genGraph(vertex*** graph, int size) {
 	*graph = checkGraph(*graph, size);
 }
 
+void destroyGraph(vertex** graph, int size) {
+	int i = 0;
+	for(; i < size; ++i) {
+		free(graph[i]);
+	}
+
+	free(graph);
+	printf("graph destroyed!\n");
+}
+
+void writeGraph(vertex** graph, char* fileName, long int size) {
+	FILE* f = fopen(fileName, "wb");
+
+	int* array1d = (int*)malloc(sizeof(int)* size * size);
+
+	//flatten graph
+	int i = 0;
+	for (; i < size; ++i) {
+		int j = 0;
+		for (; j < size; ++j) {
+			array1d[j + i*size] = graph[i][j].val;
+		}
+	}
+
+
+	printf("Writing Array\n");
+	i = 0;
+	fwrite(array1d, sizeof(int), size*size, f);
+	fclose(f);
+	free(array1d);
+}
+
+vertex** readGraph(char * filename, long int size) {
+	int* array1d = (int*)malloc(sizeof(int) * size * size);
+
+	FILE *f = fopen(filename, "rb");
+	if (f == NULL) {
+		printf("Error reading File\n");
+		return NULL;
+	}
+	printf("Reading Array\n");
+	fread(array1d, sizeof(int), size*size, f);
+
+	vertex** graph = (vertex**)malloc(sizeof(vertex*) * size * size);
+	//expand graph
+	int i = 0;
+	for (; i < size; ++i) {
+		graph[i] = (vertex*)malloc(sizeof(vertex)*size);
+		int j = 0;
+		for (; j < size; ++j) {
+			graph[i][j].val = array1d[j + i*size];
+			graph[i][j].vflag = 0;
+		}
+	}
+
+	free(array1d);
+
+	return graph;
+}
+
 //to be ran on each individual thread
 __device__ void bfsCuda(vertex* graph, int size, Node currNode) {
 
@@ -290,7 +356,6 @@ __device__ void bfsCuda(vertex* graph, int size, Node currNode) {
 
 __global__	void bfsCudaKernel(vertex* graph1d, int size) {
 	int tIndex = threadIdx.x + blockIdx.x*blockDim.x;
-	int numThreads = blockDim.x + gridDim.x;
 
 	//each thread should have there own start place and queue
 	//create queue
@@ -340,18 +405,19 @@ void expand(vertex*** graph, vertex* array1d, int size2d) {
 
 int main(int argc, char* argv[]) {
 	int graphSize = 100;
-	int numBlocks = 100; //try to code for only threads for now
+	//int numBlocks = 100;
 	int tPerBlock = 100;
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
-	if(graphSize < 1 || numBlocks < 1 || tPerBlock < 1) {
-		printf("invalid input!\n");
-		return 0;
+	char* fileName = "graphsave.txt";
+	int genFlag = 0;
+	//create graph
+	vertex** g = readGraph(fileName, graphSize);
+	if (g == NULL) {
+		genGraph(&g, graphSize);
+		genFlag = 1;
 	}
-
-	vertex** g;
- 	genGraph(&g, graphSize);
 	
 	vertex* g1d = (vertex*)malloc(sizeof(*g1d)*graphSize*graphSize);
 	flatten(g, &g1d, graphSize);
@@ -367,7 +433,7 @@ int main(int argc, char* argv[]) {
 	cudaMemcpy(d_graph, g1d, sizeof(vertex)*graphSize*graphSize, cudaMemcpyHostToDevice); //move graph to device
 	
 	clock_t begin = clock();
-	bfsCudaKernel<<<numBlocks, tPerBlock>>>(d_graph, graphSize);
+	bfsCudaKernel<<<(graphSize*graphSize)/tPerBlock, tPerBlock>>>(d_graph, graphSize);
 	clock_t end = clock();
 
 	float timeTaken = (float)((end - begin) / (float)CLOCKS_PER_SEC);
@@ -390,8 +456,13 @@ int main(int argc, char* argv[]) {
 
 	cudaFree(&d_graph);
 
-	//printGraph(g, graphSize);
-	free(g);
+	printGraph(g, graphSize);
+
+	if (genFlag) { //then we generated a graph that needs to be written
+		writeGraph(g, fileName, graphSize); // save graph to file
+	}
+
+	destroyGraph(g, graphSize);
 	free(g1d);
 	return 0;
 
