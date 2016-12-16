@@ -1,29 +1,4 @@
-Making array
-
-
-CPU Part
-Time for Max: 0.030000
-Max: 999.999985
-Time for Min: 0.040000
-Min: 0.000148
-Time for Avg: 0.030000
-Avg: 500.080049
-Time for Avg: 0.040000
-Time for Std: 0.070000
-Std: 288.642091
-
-
-GPU Part
-Time for Max: 0.030000
-Max: 999.999985
-Time for Min: 0.020000
-Min: 0.000148
-Time for Avg: 0.030000
-Avg: 24309.144783
-Time for Std: 0.070000
-Std: 23811.314261
-Making array
-
+//20 million elements
 
 CPU Part
 Time for Max: 0.060000
@@ -48,6 +23,7 @@ Time for Std: 0.120000
 Std: 288.691032
 Making array
 
+//30 million elements
 
 CPU Part
 Time for Max: 0.090000
@@ -72,6 +48,7 @@ Time for Std: 0.180000
 Std: 288.689736
 Making array
 
+//40 million elements
 
 CPU Part
 Time for Max: 0.130000
@@ -96,6 +73,7 @@ Time for Std: 0.220000
 Std: 288.652416
 Making array
 
+//50 million elements
 
 CPU Part
 Time for Max: 0.170000
@@ -120,6 +98,7 @@ Time for Std: 0.280000
 Std: 288.654340
 Making array
 
+//60 million elements
 
 CPU Part
 Time for Max: 0.190000
