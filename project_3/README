@@ -1,6 +1,7 @@
 This is the readme for Project 3 of Parallel & Distributed Programming
 
 We assume that the environment in which you compile this code support nvcc, g++, and gcc compilers
+For parts 3 and 4 we used visual studio to build and run our code
 
 For Problem 1:
     1) Go to the folder `part1`
@@ -29,3 +30,13 @@ For Problem 2:
     2) Using Microsoft Visual Studio, create new project and add "bfsCuda.cu" to the project
     3) Build the project in Visual Studio
     4) Run without debugger
+
+ For Problem 4
+    1) Go to the folder 'part4'
+    2) Using Microsoft Visual Studio, create new project and add "cuda_prefix_complete.cu" to the project
+    3) Build the project in Visual Studio
+    4) Run without debugger
+    
+    **Note: For this part we had two implementations, The first implementation does not function correctly,
+        it is called cuda_prefix.cu and can be ran as then same method mentioned above.
+    **cuda_prefix_complete.cu is the working version of the code.
