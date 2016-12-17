@@ -23,3 +23,9 @@ For Problem 2:
         ** Sample outputs can be found in the `part2` directory. Output for EC2 g2.2xlarge and
             Sandbox 8 on ORBIT can be found in `problem2_output_ec2` and problem2_output_orbit-sb8`,
             respectively.
+ 
+ For Problem 3
+    1) Go to the folder 'part3'
+    2) Using Microsoft Visual Studio, create new project and add "bfsCuda.cu" to the project
+    3) Build the project in Visual Studio
+    4) Run without debugger
