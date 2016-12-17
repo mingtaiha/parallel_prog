@@ -197,7 +197,7 @@ main() {
 	cudaMemcpy(c, dev_c, size, cudaMemcpyDeviceToHost);
 	
 	numRepeats = c[N_SIZE - 1];
-	//printf("Number of Repeats: %d\n", numRepeats); 
+	printf("Number of Repeats: %d\n", numRepeats); 
 	B = (int*)malloc(sizeof(int)*numRepeats);
 	C = (int*)malloc(sizeof(int)*numRepeats);
 	cudaMalloc((void**)&dev_B, sizeof(int)*numRepeats);
