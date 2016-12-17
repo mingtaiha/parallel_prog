@@ -123,11 +123,11 @@ __global__ void index_repeats(int *dev_c, int *dev_B, int n) {
 		}
 	}
 }
-__global__ void remove_repeats(int *dev_a, int *dev_B, int *dev_C, int n) {
+__global__ void remove_repeats(int *dev_a, int *dev_c, int *dev_C, int n) {
 	//Replace the indexes in dev_B with values by referencing dev_a
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
-	if (index < n - 1) {
-		dev_C[index] = dev_a[dev_B[index]];
+	if (index < n ) {
+		dev_C[index] = dev_a[index - dev_c[index]];
 	}
 }
 
@@ -199,9 +199,7 @@ main() {
 	numRepeats = c[N_SIZE - 1];
 	printf("Number of Repeats: %d\n", numRepeats); 
 	B = (int*)malloc(sizeof(int)*numRepeats);
-	C = (int*)malloc(sizeof(int)*numRepeats);
 	cudaMalloc((void**)&dev_B, sizeof(int)*numRepeats);
-	cudaMalloc((void**)&dev_C, sizeof(int)*numRepeats);
 
 	//Create B and C with some cuda operations on dev_c
 
@@ -212,7 +210,14 @@ main() {
 	if( numRepeats > THREADS_PER_BLOCK)
 		thisNumBlocks = numRepeats / THREADS_PER_BLOCK;
 
-	remove_repeats <<< thisNumBlocks, THREADS_PER_BLOCK >>>(dev_a, dev_B, dev_C, numRepeats);
+	int nonRepeats = N_SIZE - numRepeats;
+	int size3 = nonRepeats * sizeof(int);
+	C = (int*)malloc(size3);
+	cudaMalloc((void**)&dev_C, size3);
+
+
+
+	remove_repeats <<< thisNumBlocks, THREADS_PER_BLOCK >>>(dev_a, dev_c, dev_C, numRepeats);
 
 	cudaMemcpy(C, dev_C, sizeof(int)*numRepeats, cudaMemcpyDeviceToHost);
 
