@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "matrix_gen.h"
 
 //Cuda implementation of prefix finder
 //Structure from NVIDIA tutorial slides
